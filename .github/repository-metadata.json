@@ -1,0 +1,12 @@
+{
+  "name": "precisekit",
+  "description": "Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.",
+  "homepage": "https://phanhoangquoctu.github.io/precisekit/",
+  "topics": [
+    "typescript",
+    "utilities",
+    "exact-arithmetic",
+    "zero-dependency",
+    "precisekit"
+  ]
+}

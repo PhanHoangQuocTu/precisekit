@@ -1,5 +1,6 @@
-// API reference data rendered by index.html. Every example outcome is checked
-// against the built package by scripts/verify-docs.mjs.
+// API reference data rendered by index.html. Executable examples are checked
+// by scripts/verify-docs.mjs; run:false entries are illustrative, not executed.
+import { V050_GROUPS } from "./v050-api.js";
 
 const NUM = "number | bigint | string";
 const LOCALE = "Intl.LocalesArgument";
@@ -34,6 +35,7 @@ const VALUE_NUM = p("value", NUM, "The number to format. NaN and Infinity throw.
 const LOCALE_P = (def = '"en-US"') => p("locale", LOCALE, "BCP 47 language tag, an array of tags, or an Intl.Locale.", def);
 
 export const GROUPS = [
+  ...V050_GROUPS,
   {
     id: "cleaning", title: "Data cleaning",
     note: "Strict string inputs: other types throw TypeError. No automatic accent removal or Unicode normalization. Default whitespace follows ECMAScript, not Python's exact table. Existing normalizeWhitespace collapses internal whitespace; removeDiacritics remains opt-in. capitalize retains its uppercase-first-grapheme-only contract.",
@@ -255,7 +257,7 @@ toDecimalString(1e21);      // "1000000000000000000000"` },
     note: "A number argument returns a number and keeps its safe limits. A bigint or numeric string argument returns the exact value and raises those limits.",
     fns: [
       { name: "factorial", sig: "factorial(n: number): number\nfactorial(n: bigint): bigint\nfactorial(n: string): string",
-        desc: "n! for a whole number. A number is limited to 170, where the result still fits a double. A bigint or string is exact up to 65,000 (about 285,000 digits), computed with balanced multiplication, well under 0.2 s at the limit.",
+        desc: "n! for a whole number. A number is limited to 170, where the result still fits a double. A bigint or string is exact up to 65,000 (about 285,000 digits), computed with balanced multiplication.",
         params: [p("n", NUM, "Whole number from 0. At most 170 for a number, at most 65000 for a bigint or string.")],
         returns: "number, bigint or string, matching the input.",
         throws: [E.invalid, E.notInt("n is not a whole number"), E.range("n is negative or above the limit; the message suggests the bigint call")],
@@ -265,7 +267,7 @@ factorial(25n);          // 15511210043330985984000000n
 factorial("30");         // "265252859812191058636308480000000"
 factorial(171);          // throws: pass a bigint (factorial(171n))` },
       { name: "fibonacci", sig: "fibonacci(n: number): number\nfibonacci(n: bigint): bigint\nfibonacci(n: string): string",
-        desc: "The n-th Fibonacci number, with fibonacci(0) = 0. A number is limited to 1476. A bigint or string is exact up to 1,000,000 (208,988 digits) by fast doubling, well under 0.2 s at the limit.",
+        desc: "The n-th Fibonacci number, with fibonacci(0) = 0. A number is limited to 1476. A bigint or string is exact up to 1,000,000 (208,988 digits) by fast doubling.",
         params: [p("n", NUM, "Whole number from 0. At most 1476 for a number, at most 1000000 for a bigint or string.")],
         returns: "number, bigint or string, matching the input.",
         throws: [E.invalid, E.notInt("n is not a whole number"), E.range("n is negative or above the limit")],

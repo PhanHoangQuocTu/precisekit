@@ -387,13 +387,13 @@ var Decimal = class _Decimal {
     const drop2 = -places - this.x;
     if (drop2 <= 0) return this;
     const digits = digitCount(this.c);
-    let rounded;
+    let rounded2;
     if (drop2 > digits + 1) {
-      rounded = mode === ROUND_UP || mode === ROUND_CEIL && !this.neg || mode === ROUND_FLOOR && this.neg ? 1n : 0n;
+      rounded2 = mode === ROUND_UP || mode === ROUND_CEIL && !this.neg || mode === ROUND_FLOOR && this.neg ? 1n : 0n;
     } else {
-      rounded = divRound(this.c, pow10(drop2), this.neg, mode);
+      rounded2 = divRound(this.c, pow10(drop2), this.neg, mode);
     }
-    return _Decimal.from(this.neg, rounded, this.x + drop2);
+    return _Decimal.from(this.neg, rounded2, this.x + drop2);
   }
   floor() {
     return this.toDecimalPlaces(0, ROUND_FLOOR);
@@ -499,9 +499,9 @@ var outOfRange = (message) => new NumericRangeError("ERR_OUT_OF_RANGE", message)
 var guardBigInt = (operation, what = "Result") => {
   try {
     return operation();
-  } catch (error) {
-    if (error instanceof RangeError && !(error instanceof NumericRangeError)) throw overflowError(what);
-    throw error;
+  } catch (error2) {
+    if (error2 instanceof RangeError && !(error2 instanceof NumericRangeError)) throw overflowError(what);
+    throw error2;
   }
 };
 var checkBigInt = (value, what) => {
@@ -802,8 +802,8 @@ function round(value, decimals = 2, mode = "half-up") {
     throw outOfRange(`mode must be one of ${Object.keys(ROUNDING_MODES).join(", ")}, received ${describeValue(mode)}`);
   }
   if (typeof value === "bigint") return checkBigInt(value, "value");
-  const rounded = toDecimal(value, "value").toDecimalPlaces(decimals, rounding);
-  return typeof value === "number" ? decimalToNumber(rounded) : decimalToString(rounded);
+  const rounded2 = toDecimal(value, "value").toDecimalPlaces(decimals, rounding);
+  return typeof value === "number" ? decimalToNumber(rounded2) : decimalToString(rounded2);
 }
 function clamp(value, min, max) {
   const kind = kindOf(value, min, max);
@@ -1037,13 +1037,13 @@ function formatBytes(value, options = {}) {
   const { thresholds, factors } = unitTable(base, units.length);
   let index = 0;
   while (index < last2 && bytes.gte(thresholds[index + 1])) index++;
-  let rounded = bytes.mul(factors[index]).toDecimalPlaces(decimals, ROUND_HALF_UP);
-  if (index < last2 && rounded.gte(base)) {
+  let rounded2 = bytes.mul(factors[index]).toDecimalPlaces(decimals, ROUND_HALF_UP);
+  if (index < last2 && rounded2.gte(base)) {
     index++;
-    rounded = bytes.mul(factors[index]).toDecimalPlaces(decimals, ROUND_HALF_UP);
+    rounded2 = bytes.mul(factors[index]).toDecimalPlaces(decimals, ROUND_HALF_UP);
   }
   const text = getNumberFormat(locale, { maximumFractionDigits: decimals }).format(
-    toIntlNumber(rounded.toFixed(), "value")
+    toIntlNumber(rounded2.toFixed(), "value")
   );
   return `${text} ${units[index]}`;
 }
@@ -1977,8 +1977,8 @@ var epochDay = (year, month, day) => {
 };
 var weekdayOf = (epoch) => ((epoch + 4) % 7 + 7) % 7;
 var startOfWeek = (epoch, weekStartsOn) => {
-  const weekday = weekdayOf(epoch);
-  return epoch - ((weekday < weekStartsOn ? 7 : 0) + weekday - weekStartsOn);
+  const weekday2 = weekdayOf(epoch);
+  return epoch - ((weekday2 < weekStartsOn ? 7 : 0) + weekday2 - weekStartsOn);
 };
 var weekYearOf = (year, epoch, weekStartsOn, firstWeekContainsDate) => {
   if (epoch >= startOfWeek(epochDay(year + 1, 0, firstWeekContainsDate), weekStartsOn)) return year + 1;
@@ -2006,11 +2006,11 @@ var parseDay = (text, year) => {
   const month = unit(match[2]) - 1;
   const day = unit(match[3]);
   const week = unit(match[4]);
-  const weekday = unit(match[5]) - 1;
+  const weekday2 = unit(match[5]) - 1;
   if (match[4]) {
-    if (week < 1 || week > 53 || weekday < 0 || weekday > 6) return NaN;
+    if (week < 1 || week > 53 || weekday2 < 0 || weekday2 > 6) return NaN;
     const fourth = epochDay(year, 0, 4);
-    return (fourth + (week - 1) * 7 + weekday + 1 - (weekdayOf(fourth) || 7)) * DAY_MS;
+    return (fourth + (week - 1) * 7 + weekday2 + 1 - (weekdayOf(fourth) || 7)) * DAY_MS;
   }
   const days = DAYS_IN_MONTH[month] || (isLeapYear(year) ? 29 : 28);
   if (month < 0 || month > 11 || day < 1 || day > days) return NaN;
@@ -2235,11 +2235,11 @@ var formatTokens = (fields, pattern, locale, options = {}) => {
     throw new RangeError("firstWeekContainsDate must be between 1 and 7 inclusively");
   }
   const expanded = (pattern.match(LONG_TOKEN_RE) ?? []).map((piece) => piece[0] === "P" || piece[0] === "p" ? expandLong(piece, names) : piece).join("");
-  const { year: signedYear, month, date, hours, minutes, seconds, ms, weekday, offset } = fields;
+  const { year: signedYear, month, date, hours, minutes, seconds, ms, weekday: weekday2, offset } = fields;
   const epoch = epochDay(signedYear, month, date);
   const eraYear = signedYear > 0 ? signedYear : 1 - signedYear;
   const hour12 = hours % 12;
-  const localWeekday = (weekday - weekStartsOn + 8) % 7 || 7;
+  const localWeekday = (weekday2 - weekStartsOn + 8) % 7 || 7;
   const ordinal = (value, ordinalUnit) => names.ordinalNumber(value, ordinalUnit);
   const dayPeriodOf = (kind) => {
     if (kind === "ampm") return hours / 12 >= 1 ? "pm" : "am";
@@ -2247,7 +2247,7 @@ var formatTokens = (fields, pattern, locale, options = {}) => {
     return hours >= 17 ? "evening" : hours >= 12 ? "afternoon" : hours >= 4 ? "morning" : "night";
   };
   const widthOf = (length, short = false) => length <= 3 ? "abbreviated" : length === 5 ? "narrow" : length === 6 && short ? "short" : "wide";
-  const render = (token) => {
+  const render2 = (token) => {
     const letter = token[0];
     const length = token.length;
     const ordinalToken = token[1] === "o" && length === 2;
@@ -2293,18 +2293,18 @@ var formatTokens = (fields, pattern, locale, options = {}) => {
         return ordinalToken ? ordinal(dayOfYear, "dayOfYear") : pad(dayOfYear, length);
       }
       case "E":
-        return names.day(weekday, widthOf(length, true), "formatting");
+        return names.day(weekday2, widthOf(length, true), "formatting");
       case "i": {
-        const isoWeekday = weekday === 0 ? 7 : weekday;
+        const isoWeekday = weekday2 === 0 ? 7 : weekday2;
         if (ordinalToken) return ordinal(isoWeekday, "day");
         if (length <= 2) return pad(isoWeekday, length);
-        return names.day(weekday, widthOf(length, true), "formatting");
+        return names.day(weekday2, widthOf(length, true), "formatting");
       }
       case "e":
       case "c":
         if (ordinalToken) return ordinal(localWeekday, "day");
         if (length <= 2) return pad(localWeekday, length);
-        return names.day(weekday, widthOf(length, true), letter === "e" ? "formatting" : "standalone");
+        return names.day(weekday2, widthOf(length, true), letter === "e" ? "formatting" : "standalone");
       case "a": {
         const period = dayPeriodOf("ampm");
         if (length <= 2) return names.dayPeriod(period, "abbreviated", "formatting");
@@ -2370,7 +2370,7 @@ var formatTokens = (fields, pattern, locale, options = {}) => {
     if (!options.useAdditionalDayOfYearTokens && (value === "D" || value === "DD")) {
       throw new RangeError(`Use \`${value.toLowerCase()}\` instead of \`${value}\` (in \`${pattern}\`) for formatting days of the month; pass useAdditionalDayOfYearTokens to allow it`);
     }
-    return render(value);
+    return render2(value);
   }).join("");
 };
 
@@ -2512,9 +2512,9 @@ function parseDuration(text) {
     total = total.add(new ExactDecimal(match[1]).mul(size));
     position = DURATION_PART.lastIndex;
   }
-  const rounded = total.toDecimalPlaces(0);
-  const milliseconds = rounded.toNumber();
-  if (!rounded.isFinite()) throw overflowError("Duration");
+  const rounded2 = total.toDecimalPlaces(0);
+  const milliseconds = rounded2.toNumber();
+  if (!rounded2.isFinite()) throw overflowError("Duration");
   if (milliseconds > Number.MAX_SAFE_INTEGER) {
     throw new NumericRangeError("ERR_OVERFLOW", "Duration exceeds Number.MAX_SAFE_INTEGER milliseconds");
   }
@@ -2983,15 +2983,15 @@ function safeJsonParse(text) {
   if (typeof text !== "string") throw new TypeError("text must be a string");
   try {
     return { ok: true, value: JSON.parse(text) };
-  } catch (error) {
-    return { ok: false, error };
+  } catch (error2) {
+    return { ok: false, error: error2 };
   }
 }
 function safeJsonStringify(value) {
   try {
     return { ok: true, value: JSON.stringify(value) };
-  } catch (error) {
-    return { ok: false, error };
+  } catch (error2) {
+    return { ok: false, error: error2 };
   }
 }
 var isPlainObject = (value) => {
@@ -3010,8 +3010,8 @@ function toString(value) {
   if (Array.isArray(value) || isPlainObject(value)) {
     try {
       return JSON.stringify(value);
-    } catch (error) {
-      const detail = error instanceof Error ? `: ${error.message}` : "";
+    } catch (error2) {
+      const detail = error2 instanceof Error ? `: ${error2.message}` : "";
       throw new TypeError(`value cannot be represented as deterministic JSON${detail}`);
     }
   }
@@ -3421,8 +3421,8 @@ var setByPath = (obj, path, value) => {
   if (typeof obj !== "object" || obj === null) throw new TypeError("obj must be an object or an array");
   const keys = parsePath(path);
   if (keys.length === 0) throw new RangeError("path must contain at least one key");
-  const unsafe = keys.find((key) => UNSAFE_KEYS2.has(key));
-  if (unsafe !== void 0) throw new TypeError(`path must not contain the unsafe key "${unsafe}"`);
+  const unsafe2 = keys.find((key) => UNSAFE_KEYS2.has(key));
+  if (unsafe2 !== void 0) throw new TypeError(`path must not contain the unsafe key "${unsafe2}"`);
   const write = (node, depth) => {
     const key = keys[depth];
     let copy;
@@ -3643,12 +3643,12 @@ function getAbortError(signal) {
   if (typeof DOMException === "function") {
     return new DOMException("This operation was aborted", "AbortError");
   }
-  const error = new Error("This operation was aborted");
-  error.name = "AbortError";
-  return error;
+  const error2 = new Error("This operation was aborted");
+  error2.name = "AbortError";
+  return error2;
 }
-function isAbortError(error) {
-  return typeof error === "object" && error !== null && "name" in error && error.name === "AbortError";
+function isAbortError(error2) {
+  return typeof error2 === "object" && error2 !== null && "name" in error2 && error2.name === "AbortError";
 }
 async function wait(time, { signal } = {}) {
   assertWait(time, "time");
@@ -3682,13 +3682,13 @@ function withRetry(fn, {
         reject(getAbortError(signal));
         return;
       }
-      const retry2 = async ({ error }) => {
-        const delay = typeof delay_ === "function" ? delay_({ count, error }) : delay_;
+      const retry2 = async ({ error: error2 }) => {
+        const delay = typeof delay_ === "function" ? delay_({ count, error: error2 }) : delay_;
         if (delay) {
           try {
             await wait(delay, { signal });
-          } catch (error2) {
-            reject(error2);
+          } catch (error3) {
+            reject(error3);
             return;
           }
         }
@@ -3697,19 +3697,19 @@ function withRetry(fn, {
       try {
         const data = await fn();
         resolve(data);
-      } catch (error) {
+      } catch (error2) {
         if (signal?.aborted) {
           reject(getAbortError(signal));
           return;
         }
-        if (isAbortError(error)) {
-          reject(error);
+        if (isAbortError(error2)) {
+          reject(error2);
           return;
         }
-        if (count < retryCount && await shouldRetry({ count, error })) {
-          return retry2({ error });
+        if (count < retryCount && await shouldRetry({ count, error: error2 })) {
+          return retry2({ error: error2 });
         }
-        reject(error);
+        reject(error2);
       }
     };
     void attemptRetry().catch(reject);
@@ -3847,8 +3847,8 @@ async function retry(fn, options = {}) {
   for (let attempt = 0; ; attempt++) {
     try {
       return await fn();
-    } catch (error) {
-      if (attempt >= retries || shouldRetry && !shouldRetry(error, attempt + 1)) throw error;
+    } catch (error2) {
+      if (attempt >= retries || shouldRetry && !shouldRetry(error2, attempt + 1)) throw error2;
       if (delay > 0) await sleep(delay);
       delay *= factor;
     }
@@ -3858,18 +3858,18 @@ function withTimeout(promise, ms, message) {
   assertWait(ms, "ms");
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
-      const error = new Error(message ?? `Timed out after ${ms}ms`);
-      error.name = "TimeoutError";
-      reject(error);
+      const error2 = new Error(message ?? `Timed out after ${ms}ms`);
+      error2.name = "TimeoutError";
+      reject(error2);
     }, ms);
     Promise.resolve(promise).then(
       (value) => {
         clearTimeout(timer);
         resolve(value);
       },
-      (error) => {
+      (error2) => {
         clearTimeout(timer);
-        reject(error);
+        reject(error2);
       }
     );
   });
@@ -4193,4 +4193,568 @@ function isServer() {
   return isNode() || isBun();
 }
 
-export { NumericRangeError, NumericTypeError, abs, addDays, addMonths, addWeeks, addYears, averageBig, averageValueInArray, binarySearch, bubbleSort, buildQueryString, camelCase, capitalize, chunk, clamp, compact, compareNumbers, countBy, countWords, countingSort, countingSortByDigit, debounce, deepClone, deepEqual, deepMerge, difference, differenceInCalendarDays, differenceInCalendarMonths, differenceInDays, differenceInMonths, differenceInYears, divide, drop, endOfDay, endOfISOWeek, endOfMonth, endOfWeek, endOfYear, enumerate, escapeHtml, escapeRegExp, factorial, fibonacci, filterBy, findIndexes, findMax, findMin, first, firstChar, flatten, flattenDeep, formatBytes, formatCompactNumber, formatCurrency, formatDate, formatDuration, formatInTimeZone, formatNumber, formatPercent, formatRelativeTime, formatUnit, gcd, getAbortError, getByPath, getCountryCurrencies, getCurrencyName, getCurrencySymbol, getDayOfYear, getDaysInMonth, getTimeZoneName, getTimeZoneOffset, groupBy, hasDOM, heapSort, heapify, insertionSort, intersection, isAbortError, isAfter, isBefore, isBoolean, isBrowser, isClient, isDefined, isEmail, isEmpty, isEqualDate, isFunction, isLeapYear2 as isLeapYear, isNil, isNode, isNumber, isNumeric, isPlainObject3 as isPlainObject, isPrime, isPromiseLike, isSameDay, isSameMonth, isSameYear, isServer, isString, isTimeZone, isToday, isTomorrow, isUrl, isUuid, isValidDate, isWebWorker, isWithinInterval, isYesterday, kebabCase, keyBy, last, lastChar, lcm, linearSearch, lstrip, mapValues, maskString, maxBy, median, medianBig, memoize, merge, mergeObjects, mergeSort, minBy, modulo, multiply, normalizeWhitespace, omit, once, parseBytes, parseDuration, parseISO, parseQueryString, partition, pascalCase, percentage, pick, power, quickSort, radixSort, randomInt, range, removeDiacritics, retry, reverseText, round, rstrip, safeJsonParse, safeJsonStringify, safeToBigInt, safeToBoolean, safeToInteger, safeToNumber, safeToString, sample, selectionSort, setByPath, shortenString, shuffle, sleep, slugify, snakeCase, sort, sortBy, startOfDay, startOfISOWeek, startOfMonth, startOfWeek2 as startOfWeek, startOfYear, strip, subDays, subMonths, subWeeks, subYears, subtract, sumBig, sumBy, sumValueInArray, summary, take, throttle, title, titleCase, toArray, toBoolean, toDecimalString, toNumber, toString, truncateText, unescapeHtml, union, unique, wait, withRetry, withTimeout, zip };
+// src/modules/money/index.ts
+var modes = ["up", "down", "ceil", "floor", "half-up", "half-down", "half-even"];
+function scale2(options) {
+  if (!options || typeof options.currency !== "string") throw new TypeError("currency must be a string");
+  const code = options.currency.toUpperCase();
+  if (!Object.values(countryCurrencies).some((codes) => codes.includes(code))) throw outOfRange("Unsupported currency");
+  if (options.roundingMode !== void 0 && !modes.includes(options.roundingMode)) throw outOfRange("Invalid roundingMode");
+  return new Intl.NumberFormat("en-US", { style: "currency", currency: code }).resolvedOptions().maximumFractionDigits ?? 2;
+}
+function ratio(value, name) {
+  const d = toDecimal(value, name);
+  return guardBigInt(() => {
+    const signed = d.neg ? -d.c : d.c;
+    return d.x >= 0 ? [signed * 10n ** BigInt(d.x), 1n] : [signed, 10n ** BigInt(-d.x)];
+  });
+}
+function rounded(n, d, mode) {
+  const neg = n < 0n;
+  const a = neg ? -n : n;
+  let q = a / d;
+  const r = a % d;
+  if (r !== 0n) {
+    if (mode === void 0) throw outOfRange("Amount exceeds currency precision; provide roundingMode");
+    const up = mode === "up" || mode === "ceil" && !neg || mode === "floor" && neg || mode.startsWith("half-") && (r * 2n > d || r * 2n === d && (mode === "half-up" || mode === "half-even" && q % 2n !== 0n));
+    if (up) q++;
+  }
+  return checkBigInt(neg ? -q : q, "Money result");
+}
+function render(value, digits) {
+  checkBigInt(value, "Money result");
+  const text = (value < 0n ? -value : value).toString().padStart(digits + 1, "0");
+  return (value < 0n ? "-" : "") + (digits ? text.slice(0, -digits) + "." + text.slice(-digits) : text);
+}
+function toMinorUnits(amount, options) {
+  const digits = scale2(options);
+  const [n, d] = ratio(amount, "amount");
+  return guardBigInt(() => rounded(n * 10n ** BigInt(digits), d, options.roundingMode));
+}
+function fromMinorUnits(amount, options) {
+  const digits = scale2(options);
+  if (typeof amount !== "bigint" && (typeof amount !== "string" || !/^[+-]?\d+$/.test(amount))) throw new TypeError("minor units must be bigint or integer string");
+  const value = toDecimal(amount, "amount").toBigInt();
+  return render(value, digits);
+}
+function allocateMoney(amount, ratios, options) {
+  const digits = scale2(options);
+  const units = toMinorUnits(amount, options);
+  if (!Array.isArray(ratios) || ratios.length === 0) throw outOfRange("ratios must be nonempty");
+  const parsed = Array.from(ratios, (v) => toDecimal(v, "ratio"));
+  if (parsed.some((v) => v.neg && !v.isZero())) throw outOfRange("ratios must be nonnegative");
+  const exp = parsed.reduce((min, v) => Math.min(min, v.x), 0);
+  return guardBigInt(() => {
+    const weights = parsed.map((v) => v.c * 10n ** BigInt(v.x - exp));
+    const total = weights.reduce((a, b) => a + b, 0n);
+    if (!total) throw outOfRange("ratio total must be positive");
+    const magnitude = units < 0n ? -units : units;
+    const shares = weights.map((w) => magnitude * w / total);
+    let left = magnitude - shares.reduce((a, b) => a + b, 0n);
+    const order = weights.map((w, i) => ({ i, remainder: magnitude * w % total })).sort((a, b) => a.remainder > b.remainder ? -1 : a.remainder < b.remainder ? 1 : a.i - b.i);
+    for (const { i } of order) {
+      if (left === 0n) break;
+      shares[i]++;
+      left--;
+    }
+    return shares.map((v) => render(units < 0n ? -v : v, digits));
+  });
+}
+function calculateTax(amount, rate, options) {
+  const digits = scale2(options);
+  const units = toMinorUnits(amount, options);
+  const [n, d] = ratio(rate, "rate");
+  if (n < 0n || !["inclusive", "exclusive"].includes(options.mode)) throw outOfRange("Invalid tax options");
+  return guardBigInt(() => {
+    const subtotal = options.mode === "inclusive" ? rounded(units * d, d + n, options.roundingMode ?? "half-even") : units;
+    const tax = options.mode === "inclusive" ? units - subtotal : rounded(units * n, d, options.roundingMode ?? "half-even");
+    return { subtotal: render(subtotal, digits), tax: render(tax, digits), total: render(subtotal + tax, digits) };
+  });
+}
+function applyDiscount(amount, discount, options) {
+  const digits = scale2(options);
+  const units = toMinorUnits(amount, options);
+  const original = toDecimal(amount, "amount");
+  if (original.neg && !original.isZero() || !discount || !["fixed", "percentage"].includes(discount.type)) throw outOfRange("Invalid discount");
+  const [n, d] = ratio(discount.value, "discount");
+  if (n < 0n || discount.type === "percentage" && n > 100n * d) throw outOfRange("Invalid discount value");
+  return guardBigInt(() => {
+    if (discount.type === "fixed" && toDecimal(discount.value, "discount").gt(original)) throw outOfRange("Discount exceeds original amount");
+    const reduction = discount.type === "fixed" ? toMinorUnits(discount.value, options) : rounded(units * n, d * 100n, options.roundingMode ?? "half-even");
+    if (reduction > units) throw outOfRange("Discount exceeds original amount");
+    return { original: render(units, digits), discount: render(reduction, digits), final: render(units - reduction, digits) };
+  });
+}
+
+// src/modules/locale/index.ts
+function parse(value, options, style, currencyOptions) {
+  if (typeof value !== "string") throw new TypeError("value must be a string");
+  if (!options || typeof options.locale !== "string" || !options.locale) throw new TypeError("locale must be a nonempty string");
+  if (value.length > MAX_EXPONENT2 * 2 + 100) throw outOfRange("Localized input is too long");
+  let currency;
+  if (style === "currency") {
+    if (typeof currencyOptions?.currency !== "string") throw new TypeError("currency must be a string");
+    currency = currencyOptions.currency.toUpperCase();
+    if (!Object.values(countryCurrencies).some((codes) => codes.includes(currency))) throw outOfRange("Unsupported currency");
+    if (currencyOptions.currencyDisplay !== void 0 && !["symbol", "code", "narrowSymbol"].includes(currencyOptions.currencyDisplay)) throw outOfRange("Invalid currencyDisplay");
+    if (currencyOptions.currencySign !== void 0 && !["standard", "accounting"].includes(currencyOptions.currencySign)) throw outOfRange("Invalid currencySign");
+  }
+  const formatter = new Intl.NumberFormat(options.locale, {
+    style,
+    currency,
+    currencyDisplay: currencyOptions?.currencyDisplay,
+    currencySign: currencyOptions?.currencySign,
+    maximumFractionDigits: 20
+  });
+  const decimalSeparator = formatter.formatToParts(1.1234567).find((p) => p.type === "decimal")?.value;
+  const groupParts = formatter.formatToParts(123456789012345n);
+  const groupSeparator = groupParts.find((p) => p.type === "group")?.value;
+  const digits = /* @__PURE__ */ new Map();
+  const digitFormatter = new Intl.NumberFormat(options.locale, { useGrouping: false });
+  for (let i = 0; i < 10; i++) digits.set(digitFormatter.format(i), String(i));
+  const lengths = groupParts.filter((p) => p.type === "integer").map((p) => [...p.value].length);
+  const primary = lengths[lengths.length - 1];
+  const secondary = lengths[lengths.length - 2] ?? primary;
+  const numericTypes = /* @__PURE__ */ new Set(["integer", "group", "decimal", "fraction"]);
+  let body;
+  let negative = false;
+  for (const sample2 of [12345.6, -12345.6]) {
+    const parts = formatter.formatToParts(sample2);
+    const start = parts.findIndex((p) => numericTypes.has(p.type));
+    let end = parts.length - 1;
+    while (!numericTypes.has(parts[end].type)) end--;
+    const prefix = parts.slice(0, start).map((p) => p.value).join("");
+    const suffix = parts.slice(end + 1).map((p) => p.value).join("");
+    if (value.startsWith(prefix) && value.endsWith(suffix)) {
+      const candidate = value.slice(prefix.length, suffix ? -suffix.length : void 0);
+      if ([...candidate].some((c) => digits.has(c))) {
+        const forbidden = [...candidate].some((c) => !digits.has(c) && c !== decimalSeparator && c !== groupSeparator);
+        if (!forbidden) {
+          body = candidate;
+          negative = sample2 < 0;
+          break;
+        }
+      }
+    }
+  }
+  if (body === void 0) throw outOfRange("Localized affix or digits do not match locale");
+  const fractions = decimalSeparator ? body.split(decimalSeparator) : [body];
+  if (fractions.length > 2 || !fractions[0] || fractions.length === 2 && !fractions[1]) throw outOfRange("Malformed localized decimal");
+  const groups = groupSeparator ? fractions[0].split(groupSeparator) : [fractions[0]];
+  const decode = (text) => {
+    let result = "";
+    for (const char of text) {
+      const digit = digits.get(char);
+      if (digit === void 0) throw outOfRange("Invalid localized digit");
+      result += digit;
+    }
+    return result;
+  };
+  const integerGroups = groups.map(decode);
+  if (integerGroups.some((g) => !g)) throw outOfRange("Empty digit group");
+  if (groups.length > 1) {
+    if (integerGroups[integerGroups.length - 1].length !== primary || integerGroups[0].length > secondary || integerGroups.slice(1, -1).some((g) => g.length !== secondary)) throw outOfRange("Malformed grouping");
+    const totalDigits = integerGroups.reduce((n, g) => n + g.length, 0);
+    const sampleExponent = totalDigits - (style === "percent" ? 3 : 1);
+    if (totalDigits <= 15 && sampleExponent >= 0 && !formatter.formatToParts(10n ** BigInt(sampleExponent)).some((p) => p.type === "group")) throw outOfRange("Grouping not used at this magnitude");
+  }
+  const fraction = fractions.length === 2 ? decode(fractions[1]) : "";
+  const canonical = (negative ? "-" : "") + integerGroups.join("") + (fraction ? "." + fraction : "");
+  const parsed = toDecimal(canonical, "value");
+  if (style !== "percent" || parsed.isZero()) return decimalToString(parsed);
+  return decimalToString(toDecimal(`${decimalToString(parsed)}e-2`, "percent"));
+}
+function parseLocalizedNumber(value, options) {
+  return parse(value, options, "decimal");
+}
+function parseLocalizedCurrency(value, options) {
+  return parse(value, options, "currency", options);
+}
+function parseLocalizedPercent(value, options) {
+  return parse(value, options, "percent");
+}
+
+// src/modules/normalization/index.ts
+var error = (path, code) => ({ path, code, message: `Normalization failed: ${code}` });
+var unsafe = /* @__PURE__ */ new Set(["__proto__", "constructor", "prototype"]);
+var plain = (v) => typeof v === "object" && v !== null && (Object.getPrototypeOf(v) === Object.prototype || Object.getPrototypeOf(v) === null);
+var arrayLength = (value) => {
+  if (!Array.isArray(value)) throw new TypeError();
+  const descriptor = Object.getOwnPropertyDescriptor(value, "length");
+  if (!descriptor || !("value" in descriptor) || !Number.isSafeInteger(descriptor.value) || descriptor.value < 0) throw new TypeError();
+  return descriptor.value;
+};
+function normalizeRecord(input, schema, options = {}) {
+  const errors = [];
+  const data = {};
+  try {
+    if (!plain(input) || !plain(schema)) return { success: false, errors: [error([], "INVALID_RECORD")] };
+    if (options.unknownKeys !== void 0 && options.unknownKeys !== "strip" && options.unknownKeys !== "reject") throw new TypeError();
+    const fields = Object.getOwnPropertyDescriptors(schema);
+    for (const key of Reflect.ownKeys(fields)) {
+      if (typeof key !== "string" || unsafe.has(key)) {
+        errors.push(error([], "UNSAFE_SCHEMA_KEY"));
+        continue;
+      }
+      const descriptor = fields[key];
+      if (!("value" in descriptor)) {
+        errors.push(error([key], "ACCESSOR"));
+        continue;
+      }
+      const field = descriptor.value;
+      let fn = field;
+      let fallback;
+      if (typeof field !== "function") {
+        if (!plain(field)) {
+          errors.push(error([key], "INVALID_SCHEMA"));
+          continue;
+        }
+        const fd = Object.getOwnPropertyDescriptor(field, "normalize");
+        fn = fd && "value" in fd ? fd.value : void 0;
+        fallback = Object.getOwnPropertyDescriptor(field, "default");
+      }
+      if (typeof fn !== "function") {
+        errors.push(error([key], "INVALID_SCHEMA"));
+        continue;
+      }
+      const source = Object.getOwnPropertyDescriptor(input, key) ?? fallback;
+      if (!source) {
+        errors.push(error([key], "MISSING_FIELD"));
+        continue;
+      }
+      if (!("value" in source)) {
+        errors.push(error([key], "ACCESSOR"));
+        continue;
+      }
+      try {
+        const value = Reflect.apply(fn, void 0, [source.value]);
+        if (value === null || value === void 0) errors.push(error([key], "INVALID_FIELD"));
+        else Object.defineProperty(data, key, { value, enumerable: true, writable: true, configurable: true });
+      } catch {
+        errors.push(error([key], "INVALID_FIELD"));
+      }
+    }
+    for (const key of Reflect.ownKeys(input)) {
+      const own = Object.getOwnPropertyDescriptor(input, key);
+      if (own && !("value" in own)) errors.push(error([String(key)], "ACCESSOR"));
+      else if (options.unknownKeys === "reject" && (typeof key !== "string" || !Object.prototype.hasOwnProperty.call(fields, key))) errors.push(error([String(key)], "UNKNOWN_FIELD"));
+    }
+  } catch {
+    errors.push(error([], "INVALID_RECORD"));
+  }
+  return errors.length ? { success: false, errors } : { success: true, data };
+}
+function normalizeArray(input, normalizer, options = {}) {
+  const entries = [];
+  const errors = [];
+  let length;
+  let onError;
+  try {
+    onError = options.onError;
+    if (onError !== void 0 && onError !== "collect" && onError !== "fail-fast") throw new TypeError();
+  } catch {
+    throw new TypeError("Invalid normalization error policy");
+  }
+  try {
+    if (!Array.isArray(input) || typeof normalizer !== "function") throw new TypeError();
+    length = arrayLength(input);
+  } catch {
+    return { success: false, entries, errors: [error([], "INVALID_ARRAY")] };
+  }
+  for (let index = 0; index < length; index++) {
+    try {
+      const descriptor = Object.getOwnPropertyDescriptor(input, index);
+      if (!descriptor) errors.push(error([index], "MISSING_ENTRY"));
+      else if (!("value" in descriptor)) errors.push(error([index], "ACCESSOR"));
+      else {
+        const result = normalizer(descriptor.value);
+        if (!plain(result)) throw new TypeError();
+        const status = Object.getOwnPropertyDescriptor(result, "success");
+        if (!status || !("value" in status)) throw new TypeError();
+        if (status.value === true) {
+          const data = Object.getOwnPropertyDescriptor(result, "data");
+          if (!data || !("value" in data)) throw new TypeError();
+          entries.push({ index, data: data.value });
+        } else if (status.value === false) {
+          const issues = Object.getOwnPropertyDescriptor(result, "errors");
+          if (!issues || !("value" in issues)) throw new TypeError();
+          const issuesLength = arrayLength(issues.value);
+          if (issuesLength === 0) throw new TypeError();
+          const validated = [];
+          for (let i = 0; i < issuesLength; i++) {
+            const item = Object.getOwnPropertyDescriptor(issues.value, i);
+            if (!item || !("value" in item) || !plain(item.value)) throw new TypeError();
+            const fields = Object.getOwnPropertyDescriptors(item.value);
+            if (!fields.path || !("value" in fields.path) || !Array.isArray(fields.path.value) || !fields.code || !("value" in fields.code) || typeof fields.code.value !== "string") throw new TypeError();
+            const pathLength = arrayLength(fields.path.value);
+            const path = [index];
+            for (let p = 0; p < pathLength; p++) {
+              const segment = Object.getOwnPropertyDescriptor(fields.path.value, p);
+              if (!segment || !("value" in segment) || typeof segment.value !== "string" && (typeof segment.value !== "number" || !Number.isSafeInteger(segment.value))) throw new TypeError();
+              path.push(segment.value);
+            }
+            validated.push(error(path, fields.code.value));
+          }
+          errors.push(...validated);
+        } else throw new TypeError();
+      }
+    } catch {
+      errors.push(error([index], "INVALID_ENTRY"));
+    }
+    if (errors.length && onError === "fail-fast") break;
+  }
+  return errors.length ? { success: false, entries, errors } : { success: true, data: entries.map((entry) => entry.data) };
+}
+
+// src/modules/security/index.ts
+function isSafeRedirectUrl(value, options = {}) {
+  try {
+    if (!options || typeof options !== "object" || options.allowRelative !== void 0 && typeof options.allowRelative !== "boolean" || options.allowedOrigins !== void 0 && (!Array.isArray(options.allowedOrigins) || !options.allowedOrigins.every((origin) => typeof origin === "string"))) return false;
+    if (typeof value !== "string" || !value || /[\s\\\u0000-\u001f\u007f]/u.test(value) || /%(?:0[0-9a-f]|1[0-9a-f]|7f|2f|5c|25)/i.test(value)) return false;
+    encodeURI(value);
+    decodeURIComponent(value);
+    if (value.startsWith("/")) return options.allowRelative !== false && !value.startsWith("//");
+    if (!/^https?:\/\//i.test(value)) return false;
+    try {
+      const target = new URL(value);
+      if (target.username || target.password) return false;
+      return (options.allowedOrigins ?? []).some((origin) => {
+        const allowed = new URL(origin);
+        return !allowed.username && !allowed.password && allowed.pathname === "/" && !allowed.search && !allowed.hash && (allowed.protocol === "https:" || allowed.protocol === "http:") && allowed.origin === target.origin;
+      });
+    } catch {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+}
+function getSafeRedirectTarget(value, options) {
+  try {
+    const fallback = options.fallback;
+    if (!isSafeRedirectUrl(fallback, options)) throw new TypeError();
+    return typeof value === "string" && isSafeRedirectUrl(value, options) ? value : fallback;
+  } catch {
+    throw new TypeError("Invalid redirect fallback");
+  }
+}
+function redactSensitiveFields(value, options) {
+  try {
+    if (!options || typeof options !== "object" || !Array.isArray(options.keys) || !options.keys.every((key) => typeof key === "string") || options.replacement !== void 0 && typeof options.replacement !== "string" || options.caseSensitive !== void 0 && typeof options.caseSensitive !== "boolean") throw new TypeError();
+    const seen = /* @__PURE__ */ new WeakMap();
+    const keys = new Set(options.keys.map((key) => options.caseSensitive ? key : key.toLowerCase()));
+    const replacement = options.replacement ?? "[REDACTED]";
+    const clone = (node) => {
+      if (typeof node === "function" || typeof node === "symbol") throw new TypeError();
+      if (node === null || typeof node !== "object") return node;
+      const cached = seen.get(node);
+      if (cached) return cached;
+      const prototype = Object.getPrototypeOf(node);
+      if (prototype === Date.prototype) {
+        if (Reflect.ownKeys(node).length) throw new TypeError();
+        const copy = new Date(Date.prototype.getTime.call(node));
+        seen.set(node, copy);
+        return copy;
+      }
+      if (Array.isArray(node) ? prototype !== Array.prototype : prototype !== Object.prototype && prototype !== null) throw new TypeError();
+      const output = Array.isArray(node) ? [] : Object.create(prototype);
+      seen.set(node, output);
+      for (const key of Reflect.ownKeys(node)) {
+        const descriptor = Object.getOwnPropertyDescriptor(node, key);
+        if (!descriptor || !("value" in descriptor)) throw new TypeError();
+        const matches = typeof key === "string" && keys.has(options.caseSensitive ? key : key.toLowerCase());
+        Object.defineProperty(output, key, { ...descriptor, value: matches ? replacement : clone(descriptor.value) });
+      }
+      return output;
+    };
+    return clone(value);
+  } catch {
+    throw new TypeError("Unsupported value for redaction");
+  }
+}
+function sanitizeUrlForLogging(value, options = {}) {
+  try {
+    if (!options || typeof options !== "object" || options.sensitiveQueryKeys !== void 0 && (!Array.isArray(options.sensitiveQueryKeys) || !options.sensitiveQueryKeys.every((key) => typeof key === "string")) || options.replacement !== void 0 && typeof options.replacement !== "string" || options.caseSensitive !== void 0 && typeof options.caseSensitive !== "boolean" || options.preserveFragment !== void 0 && typeof options.preserveFragment !== "boolean") return "[INVALID_URL]";
+    if (typeof value !== "string") return "[INVALID_URL]";
+    const url = new URL(value);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "[INVALID_URL]";
+    url.username = "";
+    url.password = "";
+    if (!options.preserveFragment) url.hash = "";
+    const keys = new Set((options.sensitiveQueryKeys ?? ["token", "password", "secret", "api_key", "access_token", "authorization"]).map((key) => options.caseSensitive ? key : key.toLowerCase()));
+    const params = new URLSearchParams();
+    url.searchParams.forEach((entry, key) => params.append(key, keys.has(options.caseSensitive ? key : key.toLowerCase()) ? options.replacement ?? "[REDACTED]" : entry));
+    url.search = params.toString();
+    return url.href;
+  } catch {
+    return "[INVALID_URL]";
+  }
+}
+
+// src/modules/function/concurrent.ts
+function positiveInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value <= 0) {
+    throw new RangeError(`${name} must be a positive safe integer`);
+  }
+}
+function schedule(length, task, options, settled) {
+  positiveInteger(options.concurrency, "concurrency");
+  return new Promise((resolve, reject) => {
+    const { signal, concurrency } = options;
+    const results = new Array(length);
+    let next = 0;
+    let active = 0;
+    let completed = 0;
+    let stopped = false;
+    const cleanup = () => signal?.removeEventListener("abort", abort);
+    const fail = (reason) => {
+      if (stopped) return;
+      stopped = true;
+      cleanup();
+      reject(reason);
+    };
+    const abort = () => fail(signal?.reason);
+    if (signal?.aborted) {
+      abort();
+      return;
+    }
+    signal?.addEventListener("abort", abort, { once: true });
+    const launch = () => {
+      if (stopped) return;
+      if (completed === length) {
+        stopped = true;
+        cleanup();
+        resolve(results);
+        return;
+      }
+      while (!stopped && active < concurrency && next < length) {
+        const index = next++;
+        active++;
+        let value;
+        try {
+          value = task(index);
+        } catch (reason) {
+          active--;
+          if (!settled) {
+            fail(reason);
+            return;
+          }
+          results[index] = { status: "rejected", reason };
+          completed++;
+          continue;
+        }
+        Promise.resolve(value).then(
+          (result) => {
+            if (stopped) return;
+            results[index] = settled ? { status: "fulfilled", value: result } : result;
+            active--;
+            completed++;
+            launch();
+          },
+          (reason) => {
+            if (stopped) return;
+            if (!settled) {
+              fail(reason);
+              return;
+            }
+            results[index] = { status: "rejected", reason };
+            active--;
+            completed++;
+            launch();
+          }
+        );
+      }
+      if (!stopped && completed === length) launch();
+    };
+    launch();
+  });
+}
+function mapConcurrent(items, mapper, options) {
+  if (!Array.isArray(items) || typeof mapper !== "function") throw new TypeError("Expected an array and mapper");
+  return schedule(items.length, (i) => mapper(items[i], i), options, false);
+}
+function mapSettledConcurrent(items, mapper, options) {
+  if (!Array.isArray(items) || typeof mapper !== "function") throw new TypeError("Expected an array and mapper");
+  return schedule(items.length, (i) => mapper(items[i], i), options, true);
+}
+function batchAsync(items, processor, options) {
+  if (!Array.isArray(items) || typeof processor !== "function") throw new TypeError("Expected an array and processor");
+  const { batchSize } = options;
+  positiveInteger(batchSize, "batchSize");
+  return schedule(Math.ceil(items.length / batchSize), (i) => {
+    const start = i * batchSize;
+    return processor(items.slice(start, start + batchSize));
+  }, { concurrency: options.concurrency ?? 1, signal: options.signal }, false);
+}
+
+// src/modules/date/business.ts
+var DAY = 864e5;
+var MIN = -719528;
+var MAX = 2932896;
+var weekday = (day) => ((day + 4) % 7 + 7) % 7;
+function parseDate(value) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new RangeError("Expected YYYY-MM-DD");
+  const year = +value.slice(0, 4), month = +value.slice(5, 7), day = +value.slice(8);
+  const date = /* @__PURE__ */ new Date(0);
+  date.setUTCFullYear(year, month - 1, day);
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+    throw new RangeError("Invalid Gregorian calendar date");
+  }
+  return date.getTime() / DAY;
+}
+function formatDate2(day) {
+  if (day < MIN || day > MAX) throw new RangeError("Calendar result outside years 0000 through 9999");
+  return new Date(day * DAY).toISOString().slice(0, 10);
+}
+function calendar(options) {
+  const weekend = options.weekend ?? [0, 6];
+  if (!Array.isArray(weekend) || Array.from(weekend).some((n) => !Number.isInteger(n) || n < 0 || n > 6)) throw new RangeError("Invalid weekend");
+  const excluded = new Set(weekend);
+  if (excluded.size === 7) throw new RangeError("Calendar must contain a working weekday");
+  if (options.holidays !== void 0 && !Array.isArray(options.holidays)) throw new TypeError("holidays must be an array");
+  const holidays = [...new Set(Array.from(options.holidays ?? [], parseDate))].filter((day) => !excluded.has(weekday(day))).sort((a, b) => a - b);
+  const lower = (day) => {
+    let lo = 0, hi = holidays.length;
+    while (lo < hi) {
+      const mid = lo + hi >>> 1;
+      if (holidays[mid] < day) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  };
+  const count = (start, end) => {
+    const length = end - start;
+    let total = Math.floor(length / 7) * (7 - excluded.size);
+    for (let i = 0; i < length % 7; i++) if (!excluded.has(weekday(start + i))) total++;
+    return total - (lower(end) - lower(start));
+  };
+  return { count, isBusiness: (day) => !excluded.has(weekday(day)) && holidays[lower(day)] !== day };
+}
+function isBusinessDay(date, options = {}) {
+  return calendar(options).isBusiness(parseDate(date));
+}
+function addBusinessDays(date, amount, options = {}) {
+  const start = parseDate(date), rules = calendar(options);
+  if (!Number.isSafeInteger(amount)) throw new RangeError("amount must be a safe integer");
+  if (amount === 0) return date;
+  const positive = amount > 0, target = Math.abs(amount);
+  const available = positive ? MAX - start : start - MIN;
+  const count = (distance) => positive ? rules.count(start + 1, start + distance + 1) : rules.count(start - distance, start);
+  if (count(available) < target) throw new RangeError("Calendar result outside years 0000 through 9999");
+  let low = 1, high = available;
+  while (low < high) {
+    const mid = Math.floor((low + high) / 2);
+    if (count(mid) >= target) high = mid;
+    else low = mid + 1;
+  }
+  return formatDate2(start + (positive ? low : -low));
+}
+function differenceInBusinessDays(start, end, options = {}) {
+  const a = parseDate(start), b = parseDate(end), rules = calendar(options);
+  return a <= b ? rules.count(a, b) : -rules.count(b, a);
+}
+function nextBusinessDay(date, options = {}) {
+  return addBusinessDays(date, 1, options);
+}
+
+export { NumericRangeError, NumericTypeError, abs, addBusinessDays, addDays, addMonths, addWeeks, addYears, allocateMoney, applyDiscount, averageBig, averageValueInArray, batchAsync, binarySearch, bubbleSort, buildQueryString, calculateTax, camelCase, capitalize, chunk, clamp, compact, compareNumbers, countBy, countWords, countingSort, countingSortByDigit, debounce, deepClone, deepEqual, deepMerge, difference, differenceInBusinessDays, differenceInCalendarDays, differenceInCalendarMonths, differenceInDays, differenceInMonths, differenceInYears, divide, drop, endOfDay, endOfISOWeek, endOfMonth, endOfWeek, endOfYear, enumerate, escapeHtml, escapeRegExp, factorial, fibonacci, filterBy, findIndexes, findMax, findMin, first, firstChar, flatten, flattenDeep, formatBytes, formatCompactNumber, formatCurrency, formatDate, formatDuration, formatInTimeZone, formatNumber, formatPercent, formatRelativeTime, formatUnit, fromMinorUnits, gcd, getAbortError, getByPath, getCountryCurrencies, getCurrencyName, getCurrencySymbol, getDayOfYear, getDaysInMonth, getSafeRedirectTarget, getTimeZoneName, getTimeZoneOffset, groupBy, hasDOM, heapSort, heapify, insertionSort, intersection, isAbortError, isAfter, isBefore, isBoolean, isBrowser, isBusinessDay, isClient, isDefined, isEmail, isEmpty, isEqualDate, isFunction, isLeapYear2 as isLeapYear, isNil, isNode, isNumber, isNumeric, isPlainObject3 as isPlainObject, isPrime, isPromiseLike, isSafeRedirectUrl, isSameDay, isSameMonth, isSameYear, isServer, isString, isTimeZone, isToday, isTomorrow, isUrl, isUuid, isValidDate, isWebWorker, isWithinInterval, isYesterday, kebabCase, keyBy, last, lastChar, lcm, linearSearch, lstrip, mapConcurrent, mapSettledConcurrent, mapValues, maskString, maxBy, median, medianBig, memoize, merge, mergeObjects, mergeSort, minBy, modulo, multiply, nextBusinessDay, normalizeArray, normalizeRecord, normalizeWhitespace, omit, once, parseBytes, parseDuration, parseISO, parseLocalizedCurrency, parseLocalizedNumber, parseLocalizedPercent, parseQueryString, partition, pascalCase, percentage, pick, power, quickSort, radixSort, randomInt, range, redactSensitiveFields, removeDiacritics, retry, reverseText, round, rstrip, safeJsonParse, safeJsonStringify, safeToBigInt, safeToBoolean, safeToInteger, safeToNumber, safeToString, sample, sanitizeUrlForLogging, selectionSort, setByPath, shortenString, shuffle, sleep, slugify, snakeCase, sort, sortBy, startOfDay, startOfISOWeek, startOfMonth, startOfWeek2 as startOfWeek, startOfYear, strip, subDays, subMonths, subWeeks, subYears, subtract, sumBig, sumBy, sumValueInArray, summary, take, throttle, title, titleCase, toArray, toBoolean, toDecimalString, toMinorUnits, toNumber, toString, truncateText, unescapeHtml, union, unique, wait, withRetry, withTimeout, zip };

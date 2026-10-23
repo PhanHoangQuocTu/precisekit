@@ -1,4 +1,4 @@
-# AGENTS.md — Codex Instructions for @fatdevcon/utilities
+# AGENTS.md — Codex Instructions for @fatdevcon/precisekit
 
 This repository is a **published, zero-runtime-dependency TypeScript utility library**, not an application. Follow the same standards as Claude Code without duplicating every detailed rule in this file.
 

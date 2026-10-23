@@ -1,0 +1,86 @@
+{
+  "node": "v22.22.3",
+  "esbuild": "0.27.2",
+  "entry": "/home/phuonglt/Project/fatdevcon-utilities/dist/index.mjs",
+  "artifacts": {
+    "index.mjs": {
+      "raw": 135634,
+      "gzip": 33972
+    },
+    "index.js": {
+      "raw": 139736,
+      "gzip": 34596
+    },
+    "index.d.ts": {
+      "raw": 49929,
+      "gzip": 14311
+    },
+    "index.d.mts": {
+      "raw": 49929,
+      "gzip": 14311
+    }
+  },
+  "consumers": {
+    "full": {
+      "raw": 70801,
+      "gzip": 24783
+    },
+    "toNumber": {
+      "raw": 1746,
+      "gzip": 878
+    },
+    "normalizeWhitespace": {
+      "raw": 1123,
+      "gzip": 674
+    },
+    "capitalize": {
+      "raw": 1268,
+      "gzip": 759
+    },
+    "legacyMixed": {
+      "raw": 2135,
+      "gzip": 1073
+    },
+    "strip": {
+      "raw": 1449,
+      "gzip": 849
+    },
+    "title": {
+      "raw": 1253,
+      "gzip": 755
+    },
+    "firstChar": {
+      "raw": 1483,
+      "gzip": 859
+    },
+    "lastChar": {
+      "raw": 1482,
+      "gzip": 858
+    },
+    "safeToNumber": {
+      "raw": 1510,
+      "gzip": 806
+    },
+    "safeToInteger": {
+      "raw": 1721,
+      "gzip": 866
+    },
+    "safeToBigInt": {
+      "raw": 1185,
+      "gzip": 671
+    },
+    "safeToBoolean": {
+      "raw": 1131,
+      "gzip": 664
+    },
+    "safeToString": {
+      "raw": 1842,
+      "gzip": 969
+    },
+    "cleaningMixed": {
+      "raw": 2570,
+      "gzip": 1316
+    }
+  },
+  "source": "Verified against local .release/fatdevcon-utilities-0.4.2.tgz; all listed sizes match pre-feature working build."
+}

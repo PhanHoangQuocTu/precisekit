@@ -1,14 +1,20 @@
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 const require = createRequire(import.meta.url);
-const esm = await import("@fatdevcon/utilities");
-const cjs = require("@fatdevcon/utilities");
-const metadata = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+const metadataUrl = process.argv[2]
+  ? pathToFileURL(resolve(process.argv[2]))
+  : new URL("../package.json", import.meta.url);
+const metadata = JSON.parse(await readFile(metadataUrl, "utf8"));
+assert.equal(metadata.name, "@fatdevcon/precisekit", "package identity must match the PreciseKit release");
 assert.match(metadata.version, /^0\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/, "package version must be a valid pre-1.0 SemVer release");
 assert.equal(metadata.dependencies, undefined, "the package must have no runtime dependencies");
 assert.equal(metadata.peerDependencies, undefined);
+const esm = await import(metadata.name);
+const cjs = require(metadata.name);
 assert.equal(typeof Intl.Segmenter, "function");
 for (const api of [esm, cjs]) {
   assert.equal(api.formatCompactNumber(12500), "12.5K");
@@ -75,6 +81,28 @@ for (const api of [esm, cjs]) {
   assert.equal(api.formatBytes("1500000000000000000000000000000"), "1.5 QB");
   assert.throws(() => api.multiply(1e200, 1e200), (error) => error instanceof RangeError && error.code === "ERR_OVERFLOW");
   assert.throws(() => api.summary(NaN, 1), (error) => error instanceof TypeError && error.code === "ERR_INVALID_NUMBER");
+  assert.equal(api.toMinorUnits("123.45", { currency: "USD" }), 12345n);
+  assert.equal(api.fromMinorUnits(12345n, { currency: "USD" }), "123.45");
+  assert.deepEqual(api.allocateMoney("10.00", [1, 1, 1], { currency: "USD" }), ["3.34", "3.33", "3.33"]);
+  assert.deepEqual(api.calculateTax("100", "0.08", { currency: "USD", mode: "exclusive" }), { subtotal: "100.00", tax: "8.00", total: "108.00" });
+  assert.equal(api.applyDiscount("100", { type: "percentage", value: "15" }, { currency: "USD" }).final, "85.00");
+  assert.equal(api.parseLocalizedNumber("1.234,56", { locale: "de-DE" }), "1234.56");
+  assert.equal(api.parseLocalizedCurrency("$1,234.56", { locale: "en-US", currency: "USD" }), "1234.56");
+  assert.equal(api.parseLocalizedPercent("12.5%", { locale: "en-US" }), "0.125");
+  const normalize = input => api.normalizeRecord(input, { name: api.strip, age: api.safeToInteger });
+  assert.deepEqual(normalize({ name: " Minh ", age: "21" }), { success: true, data: { name: "Minh", age: 21 } });
+  assert.equal(api.normalizeArray([{ name: "Minh", age: "invalid" }], normalize).success, false);
+  assert.deepEqual(await api.mapConcurrent([1, 2], async n => n * 2, { concurrency: 1 }), [2, 4]);
+  assert.deepEqual(await api.mapSettledConcurrent([1], n => n, { concurrency: 1 }), [{ status: "fulfilled", value: 1 }]);
+  assert.deepEqual(await api.batchAsync([1, 2, 3], batch => batch.length, { batchSize: 2 }), [2, 1]);
+  assert.equal(api.isBusinessDay("2026-12-25", { holidays: ["2026-12-25"] }), false);
+  assert.equal(api.addBusinessDays("2026-12-24", 1, { holidays: ["2026-12-25"] }), "2026-12-28");
+  assert.equal(api.differenceInBusinessDays("2026-12-24", "2026-12-29", { holidays: ["2026-12-25"] }), 2);
+  assert.equal(api.nextBusinessDay("2026-12-25"), "2026-12-28");
+  assert.equal(api.isSafeRedirectUrl("//evil.example"), false);
+  assert.equal(api.getSafeRedirectTarget("https://evil.example", { fallback: "/" }), "/");
+  assert.deepEqual(api.redactSensitiveFields({ password: "secret" }, { keys: ["password"] }), { password: "[REDACTED]" });
+  assert.equal(api.sanitizeUrlForLogging("https://example.com/?token=secret"), "https://example.com/?token=%5BREDACTED%5D");
 }
 assert.deepEqual(Object.keys(esm).filter(key => key !== "default").sort(), Object.keys(cjs).sort());
 console.log(`Package exports verified (ESM + CommonJS) on ${globalThis.Bun ? "Bun " + Bun.version : "Node " + process.version}.`);

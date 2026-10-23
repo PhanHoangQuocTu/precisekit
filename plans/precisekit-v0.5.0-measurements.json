@@ -1,0 +1,433 @@
+{
+  "methodology": {
+    "node": "v22.22.3",
+    "esbuild": "0.27.2",
+    "platform": "browser",
+    "target": "es2020",
+    "format": "iife",
+    "minify": true,
+    "treeShaking": true,
+    "gzipLevel": 9,
+    "brotli": "Node zlib default parameters",
+    "baseline": "local .release/fatdevcon-utilities-0.4.2.tgz; extracted ESM, CJS and declarations",
+    "current": "dist/index.*"
+  },
+  "before": {
+    "node": "v22.22.3",
+    "esbuild": "0.27.2",
+    "entry": "/home/phuonglt/Project/fatdevcon-utilities/dist/index.mjs",
+    "artifacts": {
+      "index.mjs": {
+        "raw": 135634,
+        "gzip": 33972,
+        "brotli": 28575
+      },
+      "index.js": {
+        "raw": 139736,
+        "gzip": 34596,
+        "brotli": 29154
+      },
+      "index.d.ts": {
+        "raw": 49929,
+        "gzip": 14311
+      },
+      "index.d.mts": {
+        "raw": 49929,
+        "gzip": 14311
+      }
+    },
+    "consumers": {
+      "full": {
+        "raw": 70801,
+        "gzip": 24783,
+        "brotli": 21663
+      },
+      "toNumber": {
+        "raw": 1746,
+        "gzip": 878
+      },
+      "normalizeWhitespace": {
+        "raw": 1123,
+        "gzip": 674
+      },
+      "capitalize": {
+        "raw": 1268,
+        "gzip": 759
+      },
+      "legacyMixed": {
+        "raw": 2135,
+        "gzip": 1073
+      },
+      "strip": {
+        "raw": 1449,
+        "gzip": 849
+      },
+      "title": {
+        "raw": 1253,
+        "gzip": 755
+      },
+      "firstChar": {
+        "raw": 1483,
+        "gzip": 859
+      },
+      "lastChar": {
+        "raw": 1482,
+        "gzip": 858
+      },
+      "safeToNumber": {
+        "raw": 1510,
+        "gzip": 806
+      },
+      "safeToInteger": {
+        "raw": 1721,
+        "gzip": 866
+      },
+      "safeToBigInt": {
+        "raw": 1185,
+        "gzip": 671
+      },
+      "safeToBoolean": {
+        "raw": 1131,
+        "gzip": 664
+      },
+      "safeToString": {
+        "raw": 1842,
+        "gzip": 969
+      },
+      "cleaningMixed": {
+        "raw": 2570,
+        "gzip": 1316
+      }
+    },
+    "name": "@fatdevcon/utilities",
+    "version": "0.4.2",
+    "exportCount": 200
+  },
+  "after": {
+    "name": "@fatdevcon/precisekit",
+    "version": "0.5.0",
+    "node": "v22.22.3",
+    "esbuild": "0.27.2",
+    "entry": "/home/phuonglt/Project/fatdevcon-utilities/dist/index.mjs",
+    "esmSha256": "73ef1579bf108698f7fdfdbb9a149bca13ad4bdbbb74865dcd0a64b464d063b0",
+    "exportCount": 221,
+    "artifacts": {
+      "index.mjs": {
+        "raw": 163698,
+        "gzip": 40965,
+        "brotli": 34113
+      },
+      "index.js": {
+        "raw": 168377,
+        "gzip": 41628,
+        "brotli": 34806
+      },
+      "index.d.ts": {
+        "raw": 69665,
+        "gzip": 19612,
+        "brotli": 16768
+      },
+      "index.d.mts": {
+        "raw": 69665,
+        "gzip": 19612,
+        "brotli": 16768
+      }
+    },
+    "consumers": {
+      "full": {
+        "raw": 86535,
+        "gzip": 29801,
+        "brotli": 26171
+      },
+      "toNumber": {
+        "raw": 1746,
+        "gzip": 877,
+        "brotli": 760
+      },
+      "normalizeWhitespace": {
+        "raw": 1123,
+        "gzip": 673,
+        "brotli": 589
+      },
+      "capitalize": {
+        "raw": 1268,
+        "gzip": 758,
+        "brotli": 670
+      },
+      "legacyMixed": {
+        "raw": 2135,
+        "gzip": 1072,
+        "brotli": 931
+      },
+      "strip": {
+        "raw": 1449,
+        "gzip": 849,
+        "brotli": 757
+      },
+      "title": {
+        "raw": 1253,
+        "gzip": 755,
+        "brotli": 656
+      },
+      "firstChar": {
+        "raw": 1483,
+        "gzip": 859,
+        "brotli": 768
+      },
+      "lastChar": {
+        "raw": 1482,
+        "gzip": 858,
+        "brotli": 765
+      },
+      "safeToNumber": {
+        "raw": 1510,
+        "gzip": 805,
+        "brotli": 718
+      },
+      "safeToInteger": {
+        "raw": 1721,
+        "gzip": 866,
+        "brotli": 778
+      },
+      "safeToBigInt": {
+        "raw": 1185,
+        "gzip": 671,
+        "brotli": 597
+      },
+      "safeToBoolean": {
+        "raw": 1131,
+        "gzip": 663,
+        "brotli": 602
+      },
+      "safeToString": {
+        "raw": 1842,
+        "gzip": 970,
+        "brotli": 858
+      },
+      "cleaningMixed": {
+        "raw": 2570,
+        "gzip": 1316,
+        "brotli": 1194
+      },
+      "money": {
+        "raw": 14383,
+        "gzip": 6137,
+        "brotli": 5259
+      },
+      "locale": {
+        "raw": 14182,
+        "gzip": 6092,
+        "brotli": 5243
+      },
+      "normalization": {
+        "raw": 4551,
+        "gzip": 1765,
+        "brotli": 1596
+      },
+      "concurrency": {
+        "raw": 2351,
+        "gzip": 1174,
+        "brotli": 1049
+      },
+      "businessCalendar": {
+        "raw": 2813,
+        "gzip": 1460,
+        "brotli": 1304
+      },
+      "security": {
+        "raw": 3997,
+        "gzip": 1728,
+        "brotli": 1546
+      }
+    }
+  },
+  "deltas": {
+    "fullMinified": 15734,
+    "fullGzip": 5018,
+    "fullBrotli": 4508
+  },
+  "legacyNamedImports": {
+    "toNumber": {
+      "before": {
+        "raw": 1746,
+        "gzip": 878
+      },
+      "after": {
+        "raw": 1746,
+        "gzip": 877,
+        "brotli": 760
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": -1
+    },
+    "normalizeWhitespace": {
+      "before": {
+        "raw": 1123,
+        "gzip": 674
+      },
+      "after": {
+        "raw": 1123,
+        "gzip": 673,
+        "brotli": 589
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": -1
+    },
+    "capitalize": {
+      "before": {
+        "raw": 1268,
+        "gzip": 759
+      },
+      "after": {
+        "raw": 1268,
+        "gzip": 758,
+        "brotli": 670
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": -1
+    },
+    "legacyMixed": {
+      "before": {
+        "raw": 2135,
+        "gzip": 1073
+      },
+      "after": {
+        "raw": 2135,
+        "gzip": 1072,
+        "brotli": 931
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": -1
+    },
+    "strip": {
+      "before": {
+        "raw": 1449,
+        "gzip": 849
+      },
+      "after": {
+        "raw": 1449,
+        "gzip": 849,
+        "brotli": 757
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 0
+    },
+    "title": {
+      "before": {
+        "raw": 1253,
+        "gzip": 755
+      },
+      "after": {
+        "raw": 1253,
+        "gzip": 755,
+        "brotli": 656
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 0
+    },
+    "firstChar": {
+      "before": {
+        "raw": 1483,
+        "gzip": 859
+      },
+      "after": {
+        "raw": 1483,
+        "gzip": 859,
+        "brotli": 768
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 0
+    },
+    "lastChar": {
+      "before": {
+        "raw": 1482,
+        "gzip": 858
+      },
+      "after": {
+        "raw": 1482,
+        "gzip": 858,
+        "brotli": 765
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 0
+    },
+    "safeToNumber": {
+      "before": {
+        "raw": 1510,
+        "gzip": 806
+      },
+      "after": {
+        "raw": 1510,
+        "gzip": 805,
+        "brotli": 718
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": -1
+    },
+    "safeToInteger": {
+      "before": {
+        "raw": 1721,
+        "gzip": 866
+      },
+      "after": {
+        "raw": 1721,
+        "gzip": 866,
+        "brotli": 778
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 0
+    },
+    "safeToBigInt": {
+      "before": {
+        "raw": 1185,
+        "gzip": 671
+      },
+      "after": {
+        "raw": 1185,
+        "gzip": 671,
+        "brotli": 597
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 0
+    },
+    "safeToBoolean": {
+      "before": {
+        "raw": 1131,
+        "gzip": 664
+      },
+      "after": {
+        "raw": 1131,
+        "gzip": 663,
+        "brotli": 602
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": -1
+    },
+    "safeToString": {
+      "before": {
+        "raw": 1842,
+        "gzip": 969
+      },
+      "after": {
+        "raw": 1842,
+        "gzip": 970,
+        "brotli": 858
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 1
+    },
+    "cleaningMixed": {
+      "before": {
+        "raw": 2570,
+        "gzip": 1316
+      },
+      "after": {
+        "raw": 2570,
+        "gzip": 1316,
+        "brotli": 1194
+      },
+      "minifiedDelta": 0,
+      "gzipDelta": 0
+    }
+  }
+}

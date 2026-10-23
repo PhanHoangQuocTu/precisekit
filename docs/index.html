@@ -5,40 +5,41 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0e1a2e">
 <meta name="robots" content="index,follow">
-<title>Exact decimal math and utilities for TypeScript | @fatdevcon/utilities</title>
-<meta name="description" content="Zero-dependency TypeScript utilities: data cleaning, safe type conversion, exact decimal and bigint math, dates, Unicode text, collections and async helpers.">
+<title>PreciseKit – Exact &amp; Safe TypeScript Utilities</title>
+<meta name="description" content="PreciseKit is a zero-dependency TypeScript utility library for precise calculations, safe data handling, internationalization, dates and async workflows.">
 <meta name="keywords" content="typescript utilities, decimal math javascript, bigint, floating point precision, format currency, time zone, date formatting, lodash alternative, npm">
-<link rel="canonical" href="https://phanhoangquoctu.github.io/fatdevcon-utilities/">
+<link rel="canonical" href="https://phanhoangquoctu.github.io/precisekit/">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="@fatdevcon/utilities">
-<meta property="og:title" content="Exact decimal math and utilities for TypeScript">
-<meta property="og:description" content="Zero dependencies. Exact decimals and bigints, locale and time zone formatting, dates, text, collections and async helpers.">
-<meta property="og:url" content="https://phanhoangquoctu.github.io/fatdevcon-utilities/">
+<meta property="og:site_name" content="PreciseKit">
+<meta property="og:title" content="PreciseKit – Exact &amp; Safe TypeScript Utilities">
+<meta property="og:description" content="PreciseKit is a zero-dependency TypeScript utility library for precise calculations, safe data handling, internationalization, dates and async workflows.">
+<meta property="og:url" content="https://phanhoangquoctu.github.io/precisekit/">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="@fatdevcon/utilities">
-<meta name="twitter:description" content="Exact decimal math and everyday helpers for TypeScript, with zero dependencies.">
+<meta name="twitter:title" content="PreciseKit – Exact &amp; Safe TypeScript Utilities">
+<meta name="twitter:description" content="PreciseKit is a zero-dependency TypeScript utility library for precise calculations, safe data handling, internationalization, dates and async workflows.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e1a2e'/%3E%3Cpath d='M9 12h14M9 20h14' stroke='%235ee0a6' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"@fatdevcon/utilities","description":"Zero-dependency TypeScript utilities for data cleaning, safe type conversion, exact decimal and bigint math, dates, Unicode text, collections and async helpers.","applicationCategory":"DeveloperApplication","operatingSystem":"Node.js, Bun, browsers","programmingLanguage":["TypeScript","JavaScript"],"softwareVersion":"0.4.2","license":"https://github.com/PhanHoangQuocTu/fatdevcon-utilities/blob/master/LICENSE","codeRepository":"https://github.com/PhanHoangQuocTu/fatdevcon-utilities","url":"https://phanhoangquoctu.github.io/fatdevcon-utilities/","downloadUrl":"https://www.npmjs.com/package/@fatdevcon/utilities"}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I avoid floating-point errors like 0.1 + 0.2 in JavaScript?","acceptedAnswer":{"@type":"Answer","text":"Use summary, subtract, multiply, divide and round from @fatdevcon/utilities. They calculate in exact decimal arithmetic, so summary(0.1, 0.2) is 0.3 and round(1.005, 2) is 1.01. Pass bigint or numeric strings when values exceed 2^53."}},{"@type":"Question","name":"Does @fatdevcon/utilities have dependencies?","acceptedAnswer":{"@type":"Answer","text":"No. Since version 0.3.5 the package has zero runtime dependencies, which keeps installs small and the supply chain short."}},{"@type":"Question","name":"Does it work with TypeScript, ESM and CommonJS?","acceptedAnswer":{"@type":"Answer","text":"Yes. It ships ESM, CommonJS and type declarations, and every public option and result type is exported."}},{"@type":"Question","name":"Which runtimes are supported?","acceptedAnswer":{"@type":"Answer","text":"Node.js 18 and newer, Bun, and modern browsers. Formatting and time zone helpers use the standard Intl APIs of the runtime."}},{"@type":"Question","name":"Can I format dates in a specific time zone?","acceptedAnswer":{"@type":"Answer","text":"Yes. Pass options.timeZone to formatDate, or use formatInTimeZone and getTimeZoneOffset with any IANA zone such as Asia/Ho_Chi_Minh."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"PreciseKit","description":"Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.","applicationCategory":"DeveloperApplication","operatingSystem":"Node.js, Bun, browsers","programmingLanguage":["TypeScript","JavaScript"],"softwareVersion":"0.5.0","license":"https://github.com/PhanHoangQuocTu/precisekit/blob/master/LICENSE","codeRepository":"https://github.com/PhanHoangQuocTu/precisekit","url":"https://phanhoangquoctu.github.io/precisekit/","downloadUrl":"https://www.npmjs.com/package/@fatdevcon/precisekit","alternateName":"@fatdevcon/precisekit"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I avoid floating-point errors like 0.1 + 0.2 in JavaScript?","acceptedAnswer":{"@type":"Answer","text":"Use summary, subtract, multiply, divide and round. They calculate in exact decimal arithmetic, so summary(0.1, 0.2) is 0.3 and round(1.005, 2) is 1.01. Pass bigints or numeric strings when values exceed 2^53."}},{"@type":"Question","name":"Does it have dependencies?","acceptedAnswer":{"@type":"Answer","text":"No. Since 0.3.5 the package has zero runtime dependencies. decimal.js and date-fns are development-only test oracles."}},{"@type":"Question","name":"Does it support TypeScript, ESM and CommonJS?","acceptedAnswer":{"@type":"Answer","text":"Yes. It ships ESM, CommonJS and type declarations, and public option and result types are exported alongside the functions."}},{"@type":"Question","name":"Which runtimes are supported?","acceptedAnswer":{"@type":"Answer","text":"Node.js 18 and newer, Bun, and modern browsers. Formatting and time zone helpers use the standard Intl APIs, so output follows the runtime's locale data."}},{"@type":"Question","name":"Can it replace decimal.js, big.js, date-fns or lodash?","acceptedAnswer":{"@type":"Answer","text":"For many everyday cases, yes: exact arithmetic with rounding modes, ISO parsing, token formatting and common collection helpers are covered. It is a focused toolkit, not a full replacement. Libraries with broader scope, such as complex date arithmetic or arbitrary-base numbers, still fit those jobs better."}},{"@type":"Question","name":"Does formatDate use the same tokens as date-fns?","acceptedAnswer":{"@type":"Answer","text":"It supports a documented subset, including yyyy-MM-dd HH:mm:ss, EEEE, do, xxx and PPpp, and accepts a date-fns locale object as options.locale. It is not a complete date-fns replacement; locale-sensitive output depends on runtime ICU data and the selected locale."}},{"@type":"Question","name":"Is it tree-shakeable?","acceptedAnswer":{"@type":"Answer","text":"Yes. The package is side-effect free and every utility is a named export, so bundlers drop what you do not import."}}]}</script>
 </head>
 <body>
 <a class="skip" href="#content">Skip to content</a>
 
 <header class="bar">
   <div class="wrap bar-in">
-    <a class="brand" href="#top" aria-label="@fatdevcon/utilities home"><span>@fatdevcon/</span>utilities</a>
+    <a class="brand" href="#top" aria-label="@fatdevcon/precisekit home"><span>@fatdevcon/</span>precisekit</a>
     <nav class="nav" aria-label="Primary">
       <a href="#install">Install</a>
       <a href="#playground">Playground</a>
       <a href="#api">API</a>
       <a href="#examples">Examples</a>
+      <a href="#migration">Migration</a>
       <a href="#releases">Releases</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="bar-tools">
-      <a class="icon-link" href="https://github.com/PhanHoangQuocTu/fatdevcon-utilities" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg><span>GitHub</span></a>
-      <a class="icon-link" href="https://www.npmjs.com/package/@fatdevcon/utilities" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10h-9v2H8v-2H3zM8 10v4m4-4v4m4-4v4"/></svg><span>npm</span></a>
+      <a class="icon-link" href="https://github.com/PhanHoangQuocTu/precisekit" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg><span>GitHub</span></a>
+      <a class="icon-link" href="https://www.npmjs.com/package/@fatdevcon/precisekit" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10h-9v2H8v-2H3zM8 10v4m4-4v4m4-4v4"/></svg><span>npm</span></a>
       <button class="icon-btn" id="theme" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
     </div>
   </div>
@@ -48,8 +49,9 @@
   <section class="hero" id="top">
     <div class="wrap hero-grid">
       <div>
-        <h1>Exact math and everyday helpers for TypeScript</h1>
-        <p class="lead">One typed package with no dependencies. Calculate with decimals and bigints without floating-point drift, format for any locale and time zone, and reach for text, collection and async helpers when you need them.</p>
+        <h1><!-- package-metadata:hero-name -->PreciseKit<!-- /package-metadata:hero-name --></h1>
+        <p class="lead"><!-- package-metadata:tagline -->Exact, Safe &amp; Reliable TypeScript Utilities<!-- /package-metadata:tagline --></p>
+        <p><!-- package-metadata:description -->Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.<!-- /package-metadata:description --></p>
         <div class="install" id="install">
           <div class="install-tabs" role="tablist" aria-label="Package manager">
             <button type="button" role="tab" data-pm="npm" aria-selected="true">npm</button>
@@ -58,8 +60,8 @@
             <button type="button" role="tab" data-pm="bun" aria-selected="false">bun</button>
           </div>
           <div class="install-cmd">
-            <code id="install-cmd">npm install @fatdevcon/utilities</code>
-            <button class="copy" id="install-copy" type="button" data-copy="install-cmd" data-copy-text="npm install @fatdevcon/utilities">Copy</button>
+            <code id="install-cmd">npm install @fatdevcon/precisekit</code>
+            <button class="copy" id="install-copy" type="button" data-copy="install-cmd" data-copy-text="npm install @fatdevcon/precisekit">Copy</button>
           </div>
         </div>
         <div class="hero-actions">
@@ -86,7 +88,7 @@
           <p class="read-note" id="native-note">The highlighted digits are floating-point error.</p>
         </div>
         <div class="read is-exact" aria-live="polite">
-          <div class="read-label"><span>@fatdevcon/utilities</span><code id="exact-expr">summary(0.1, 0.2)</code></div>
+          <div class="read-label"><span>@fatdevcon/precisekit</span><code id="exact-expr">summary(0.1, 0.2)</code></div>
           <div class="read-value" id="exact-value">0.3</div>
           <p class="read-note" id="exact-note">Exact: no digits are lost.</p>
         </div>
@@ -104,8 +106,8 @@
   <section class="block" id="overview" aria-label="At a glance">
     <div class="wrap">
       <dl class="facts">
-        <div><dt>0</dt><dd>runtime dependencies. Nothing else to audit or keep patched.</dd></div>
-        <div><dt>24.8 kB</dt><dd>v0.4.2 full-root minified + gzip, while named imports stay tree-shakeable.</dd></div>
+        <div><dt>0</dt><dd>runtime dependencies. Library code, runtime and build tooling still require maintenance.</dd></div>
+        <div><!-- package-metadata:bundle-fact --><dt>29.8 kB</dt><dd>Full-root browser bundle, minified + gzip. Named imports are measured separately.</dd><!-- /package-metadata:bundle-fact --></div>
         <div><dt>ESM + CJS</dt><dd>with bundled type declarations and an exact, typed error model.</dd></div>
         <div><dt>Node 18+</dt><dd>Bun and modern browsers, using the runtime's own Intl data.</dd></div>
       </dl>
@@ -116,14 +118,15 @@
     <div class="wrap size">
       <div class="head" style="margin:0">
         <h2>Smaller by owning the hard parts</h2>
-        <p>Since version 0.3.5 the package replaces decimal.js and date-fns with a BigInt decimal engine and an ISO 8601 parser and formatter written for this package. The replacements were compared against the originals on hundreds of thousands of randomized inputs, so results stay identical.</p>
+        <p>Since version 0.3.5 the package uses its own BigInt decimal engine and ISO 8601 parser and formatter. Supported operations are checked against decimal.js and date-fns as development-only test oracles; this is not a claim of full API or behavioral parity with either library.</p>
       </div>
       <div>
-        <div class="bars" role="img" aria-label="Bundle size: version 0.3.4 was 90.9 kilobytes minified and 32.3 gzipped; local reproducible version 0.3.7 was 59.3 kilobytes minified and 21.7 gzipped; version 0.4.2 is 70.8 kilobytes minified and 24.8 gzipped.">
+        <div class="bars" role="img" aria-label="Bundle comparison. Historical and current measurements are listed below.">
           <div class="bar-row"><div class="bar-meta"><span>0.3.4, with two dependencies</span><b>32.3 kB gzip</b></div><div class="track"><div class="fill min" style="width:100%"></div><div class="fill" style="width:35.5%"></div></div></div>
-          <div class="bar-row"><div class="bar-meta"><span>0.4.2, no dependencies</span><b>24.8 kB gzip</b></div><div class="track"><div class="fill now min" style="width:77.9%"></div><div class="fill now" style="width:27.3%"></div></div></div>
+          <div class="bar-row"><div class="bar-meta"><span>0.4.2, historical</span><b>24.8 kB gzip</b></div><div class="track"><div class="fill min" style="width:77.9%"></div><div class="fill" style="width:27.3%"></div></div></div>
+          <div class="bar-row"><div class="bar-meta"><!-- package-metadata:bundle-current --><span>0.5.0, no dependencies</span><b>29.8 kB gzip</b><!-- /package-metadata:bundle-current --></div></div>
         </div>
-        <p class="bar-note">Light bar: minified (90.9 kB to 70.8 kB). Solid bar: minified and gzipped. Current sizes use <code>npm run test:bundle</code> (esbuild 0.27.2); historical figures used earlier fixtures.</p>
+        <p class="bar-note"><!-- package-metadata:bundle-note -->0.5.0: 86.5 kB minified / 29.8 kB gzip / 26.2 kB Brotli. Measured with esbuild 0.27.2; historical figures retain their original fixtures.<!-- /package-metadata:bundle-note --></p>
       </div>
     </div>
   </section>
@@ -132,7 +135,7 @@
     <div class="wrap">
       <div class="head">
         <h2>What is inside</h2>
-        <p>Over 170 exported functions in plain, named exports. Import what you need and leave the rest to your bundler.</p>
+        <p>Exact money, locale parsing, safe data normalization, bounded async work, business calendars and security helpers. Import what you need.</p>
       </div>
       <div class="inventory">
         <div class="inv-row"><div><h3>Exact decimal and big-number math</h3></div><div><p>Add, subtract, multiply, divide, round and compare numbers, bigints and numeric strings without drift. Magnitudes reach about 1e300000, and failures use typed errors with stable codes.</p><div class="chips"><a class="chip" href="#summary">summary</a><a class="chip" href="#divide">divide</a><a class="chip" href="#round">round</a><a class="chip" href="#factorial">factorial</a><a class="chip" href="#isPrime">isPrime</a><a class="chip" href="#sumBig">sumBig</a></div></div></div>
@@ -152,26 +155,26 @@
         <p>Every utility is a named export, so imports stay focused. Results below are what the code returns.</p>
       </div>
       <div class="two">
-        <article class="recipe"><h3>Exact decimal math</h3><div class="code"><pre class="hl"><code>import { divide, summary, round } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>Exact decimal math</h3><div class="code"><pre class="hl"><code>import { divide, summary, round } from "@fatdevcon/precisekit";
 
 summary(0.1, 0.2);                 // 0.3
 round(1.005, 2);                   // 1.01
 divide("1", "3", { precision: 5 }); // "0.33333"
 summary("100000000000000000000000", "1");
 // "100000000000000000000001"</code></pre></div></article>
-        <article class="recipe"><h3>Format for a real user</h3><div class="code"><pre class="hl"><code>import { formatCurrency, formatBytes } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>Format for a real user</h3><div class="code"><pre class="hl"><code>import { formatCurrency, formatBytes } from "@fatdevcon/precisekit";
 
 formatCurrency("12345678901234567890.129", "USD");
 // "$12,345,678,901,234,567,890.13"
 formatCurrency(1234.5, "VND", "vi-VN"); // "1.235 ₫"
 formatBytes(1536, { base: 1024 });      // "1.5 KiB"</code></pre></div></article>
-        <article class="recipe"><h3>Dates in any time zone</h3><div class="code"><pre class="hl"><code>import { formatDate, addMonths } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>Dates in any time zone</h3><div class="code"><pre class="hl"><code>import { formatDate, addMonths } from "@fatdevcon/precisekit";
 
 formatDate(new Date("2026-01-15T17:30:00Z"), "yyyy-MM-dd HH:mm xxx", {
   timeZone: "Asia/Ho_Chi_Minh",
 }); // "2026-01-16 00:30 +07:00"
 formatDate(addMonths("2026-01-31", 1), "yyyy-MM-dd"); // "2026-02-28"</code></pre></div></article>
-        <article class="recipe"><h3>Retry flaky work</h3><div class="code"><pre class="hl"><code>import { withRetry } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>Retry flaky work</h3><div class="code"><pre class="hl"><code>import { withRetry } from "@fatdevcon/precisekit";
 
 const config = await withRetry(() => fetch("/config.json").then((r) => r.json()), {
   retryCount: 3,
@@ -193,6 +196,8 @@ const config = await withRetry(() => fetch("/config.json").then((r) => r.json())
           <button type="button" role="tab" data-sample="Big numbers" aria-selected="false">Big numbers</button>
           <button type="button" role="tab" data-sample="Dates" aria-selected="false">Dates</button>
           <button type="button" role="tab" data-sample="Text" aria-selected="false">Text</button>
+          <button type="button" role="tab" data-sample="Locale" aria-selected="false">Locale</button>
+          <button type="button" role="tab" data-sample="Security" aria-selected="false">Security</button>
         </div>
         <span class="hint">Runs locally in your browser.</span>
       </div>
@@ -207,16 +212,19 @@ const config = await withRetry(() => fetch("/config.json").then((r) => r.json())
     <div class="wrap">
       <div class="head">
         <h2>API reference</h2>
-        <p><span id="api-count">195</span> functions with parameters, return values, errors and examples. Every example is executed against the built package before each release.</p>
+        <p><span id="api-count">216</span> documented functions with parameters, return values, errors and examples. Executable examples are checked against the built package. Illustrative and async examples are marked separately; some environment-dependent expectations are skipped by the docs runner.</p>
       </div>
       <div class="api-layout">
         <aside class="api-side">
           <div class="search"><input id="search" type="search" placeholder="Filter functions" aria-label="Filter functions" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></div>
+          <label class="category-label" for="category-filter">Category</label>
+          <select id="category-filter"><option value="">All categories</option></select>
+          <p id="search-status" role="status" aria-live="polite"></p>
           <button class="btn api-nav-toggle" id="api-nav-toggle" type="button" aria-expanded="false" aria-controls="nav-groups-wrap">Browse by group</button>
           <div class="api-nav-wrap" id="nav-groups-wrap"><nav class="api-nav" id="nav-groups" aria-label="API groups"></nav></div>
         </aside>
         <div>
-          <div id="api-reference"><div class="noscript"><p>The full reference needs JavaScript. The same content is in the <a href="https://github.com/PhanHoangQuocTu/fatdevcon-utilities#api-index">README API index</a>, and the type declarations ship with the package.</p></div></div>
+          <div id="api-reference"><div class="noscript"><p>The full reference needs JavaScript. See the <a href="https://github.com/PhanHoangQuocTu/precisekit#api-index">README overview</a> for workflows; type declarations also ship with the package.</p></div></div>
           <p class="section-empty" id="empty" hidden>No function matches that filter. Try a shorter word such as <code>format</code> or <code>array</code>.</p>
         </div>
       </div>
@@ -230,35 +238,35 @@ const config = await withRetry(() => fetch("/config.json").then((r) => r.json())
         <p>Short answers to questions developers search for, using only exported APIs.</p>
       </div>
       <div class="two">
-        <article class="recipe"><h3>How to group data in JavaScript</h3><div class="code"><pre class="hl"><code>import { groupBy } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>How to group data in JavaScript</h3><div class="code"><pre class="hl"><code>import { groupBy } from "@fatdevcon/precisekit";
 
 const byRole = groupBy([
   { name: "An", role: "dev" }, { name: "Binh", role: "qa" },
 ], (user) => user.role);
 // { dev: [{ name: "An", ... }], qa: [{ name: "Binh", ... }] }</code></pre></div></article>
-        <article class="recipe"><h3>How to avoid floating-point errors when adding money</h3><div class="code"><pre class="hl"><code>import { sumValueInArray, multiply } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>How to avoid floating-point errors when adding money</h3><div class="code"><pre class="hl"><code>import { sumValueInArray, multiply } from "@fatdevcon/precisekit";
 
 sumValueInArray([19.99, 5.01, 0.1]); // 25.1
 multiply("19.99", 3);                // "59.97"</code></pre></div></article>
-        <article class="recipe"><h3>How to format a time zone-aware date</h3><div class="code"><pre class="hl"><code>import { getTimeZoneOffset, formatInTimeZone } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>How to format a time zone-aware date</h3><div class="code"><pre class="hl"><code>import { getTimeZoneOffset, formatInTimeZone } from "@fatdevcon/precisekit";
 
 const instant = new Date("2026-01-15T12:00:00Z");
 getTimeZoneOffset(instant, "Asia/Ho_Chi_Minh", { unit: "hours" }); // 7
 formatInTimeZone(instant, "Asia/Ho_Chi_Minh", "en-GB", {
   dateStyle: "short", timeStyle: "short", hourCycle: "h23",
 }); // "15/01/2026, 19:00"</code></pre></div></article>
-        <article class="recipe"><h3>How to parse a file size or duration string</h3><div class="code"><pre class="hl"><code>import { parseBytes, parseDuration } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>How to parse a file size or duration string</h3><div class="code"><pre class="hl"><code>import { parseBytes, parseDuration } from "@fatdevcon/precisekit";
 
 parseBytes("1.5 GB");        // 1500000000
 parseBytes("512 KiB");       // 524288
 parseDuration("1h 2m 3s");   // 3723000
 parseDuration("2 days, 4 hours"); // 187200000</code></pre></div></article>
-        <article class="recipe"><h3>How to update nested state without mutating it</h3><div class="code"><pre class="hl"><code>import { setByPath } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>How to update nested state without mutating it</h3><div class="code"><pre class="hl"><code>import { setByPath } from "@fatdevcon/precisekit";
 
 const state = { user: { name: "An", tags: ["a"] } };
 const next = setByPath(state, "user.tags[1]", "b");
 // next.user.tags is ["a", "b"]; state is unchanged</code></pre></div></article>
-        <article class="recipe"><h3>How to format very large currency values</h3><div class="code"><pre class="hl"><code>import { formatCurrency } from "@fatdevcon/utilities";
+        <article class="recipe"><h3>How to format very large currency values</h3><div class="code"><pre class="hl"><code>import { formatCurrency } from "@fatdevcon/precisekit";
 
 formatCurrency("12345678901234567890.129", "USD");
 // "$12,345,678,901,234,567,890.13"</code></pre></div></article>
@@ -269,15 +277,31 @@ formatCurrency("12345678901234567890.129", "USD");
   <section class="block" id="releases">
     <div class="wrap">
       <div class="head">
-        <h2>Release 0.4.2</h2>
-        <p>0.4.2 hardens the documentation playground, refreshes the static documentation experience and preserves package compatibility with zero runtime dependencies. The full history is in the <a href="https://github.com/PhanHoangQuocTu/fatdevcon-utilities/blob/master/CHANGELOG.md">changelog</a>.</p>
+        <h2><!-- package-metadata:release-title -->Release 0.5.0<!-- /package-metadata:release-title --></h2>
+        <div><!-- package-metadata:release-summary --><ul><li>Exact money conversion, proportional allocation, inclusive/exclusive taxes and fixed/percentage discounts with explicit currency precision policies.</li><li>Typed record/array normalization with indexed errors, own-property validation and safe failure results.</li><li>Strict locale-aware number, currency and percent parsers that preserve exact decimal text.</li><li>Ordered concurrency-limited mapping, settled mapping and lazy asynchronous batches with AbortSignal support.</li><li>Timezone-independent business-calendar helpers with configurable weekends and caller-supplied holidays.</li><li>Redirect validation, safe fallback selection, cycle-preserving field redaction and URL sanitization for logs.</li><li>Renamed the package from <code>@fatdevcon/utilities</code> to <code>@fatdevcon/precisekit</code> and moved the active repository and documentation URLs to the PreciseKit identity.</li><li>Updated documentation synchronization, package, tarball and static-site verification to resolve current package identity, version and URLs from authoritative manifest metadata instead of stale release literals.</li><li>Renamed the checked-in playground bundle to <code>docs/assets/precisekit.mjs</code> and synchronized installation commands, imports, SEO metadata and crawler URLs.</li><li>Existing functions, signatures, ESM/CommonJS behavior, TypeScript declarations, exact numeric behavior and root export paths are unchanged after updating the package import name.</li><li>The package retains zero runtime dependencies, readable unminified output and side-effect-free named exports.</li><li>Historical release notes continue to use the package name under which those versions were published.</li></ul><!-- /package-metadata:release-summary --></div>
+        <p>The full history is in the <a href="https://github.com/PhanHoangQuocTu/precisekit/blob/master/CHANGELOG.md">changelog</a>.</p>
       </div>
       <div class="notes">
-        <div><h3>Safe local playground</h3><p>The playground accepts supported synchronous calls and literal values only. It parses input locally and does not compile editable JavaScript.</p></div>
-        <div><h3>Complete API audit</h3><p>All 195 documented public functions have checked signatures, contracts and runnable examples against the built package.</p></div>
-        <div><h3>Fewer external requests</h3><p>Documentation now uses local system font stacks and the checked-in package artifact, with no third-party font request.</p></div>
+        <div><h3>PreciseKit identity</h3><p>Package imports, repository links, documentation URLs and the checked-in playground artifact now use the new name consistently.</p></div>
+        <div><h3>Installed-package verification</h3><p>Clean consumer fixtures verify Node, Bun, ESM, CommonJS and strict TypeScript declarations from the packed tarball.</p></div>
+        <div><h3>Historical accuracy</h3><p>Older changelog and migration records retain the package name under which those versions were released.</p></div>
         <div><h3>Compatible and measured</h3><p>Strict conversions, readable ESM/CJS output, exact numeric behavior and zero runtime dependencies remain intact.</p></div>
       </div>
+    </div>
+  </section>
+
+  <section class="block" id="migration">
+    <div class="wrap">
+      <div class="head">
+        <h2>Migrate from @fatdevcon/utilities</h2>
+        <p>The migration from utilities 0.4.2 to PreciseKit 0.5.0 keeps the existing function and type contracts and adds six groups of helpers. Update installation and imports to <code>@fatdevcon/precisekit</code>. See the <a href="migration-from-utilities.md">migration guide</a>.</p>
+      </div>
+      <div class="two">
+        <article class="recipe"><h3>Replace the package</h3><div class="code"><pre><code>npm uninstall @fatdevcon/utilities
+npm install @fatdevcon/precisekit</code></pre></div></article>
+        <article class="recipe"><h3>Update imports</h3><div class="code"><pre><code>import { summary, formatCurrency } from "@fatdevcon/precisekit";</code></pre></div></article>
+      </div>
+      <p>The old package is not aliased or deprecated automatically. No function rename or behavioral compatibility break is introduced by the package migration.</p>
     </div>
   </section>
 
@@ -290,7 +314,7 @@ formatCurrency("12345678901234567890.129", "USD");
         <details><summary>Does it support TypeScript, ESM and CommonJS?</summary><p>Yes. It ships ESM, CommonJS and type declarations, and public option and result types are exported alongside the functions.</p></details>
         <details><summary>Which runtimes are supported?</summary><p>Node.js 18 and newer, Bun, and modern browsers. Formatting and time zone helpers use the standard <code>Intl</code> APIs, so output follows the runtime's locale data.</p></details>
         <details><summary>Can it replace decimal.js, big.js, date-fns or lodash?</summary><p>For many everyday cases, yes: exact arithmetic with rounding modes, ISO parsing, token formatting and common collection helpers are covered. It is a focused toolkit, not a full replacement. Libraries with broader scope, such as complex date arithmetic or arbitrary-base numbers, still fit those jobs better.</p></details>
-        <details><summary>Does formatDate use the same tokens as date-fns?</summary><p>Yes. Patterns such as <code>yyyy-MM-dd HH:mm:ss</code>, <code>EEEE</code>, <code>do</code>, <code>xxx</code> and <code>PPpp</code> produce the same output, and a date-fns locale object can be passed as <code>options.locale</code>.</p></details>
+        <details><summary>Does formatDate use the same tokens as date-fns?</summary><p>It supports a documented subset, including <code>yyyy-MM-dd HH:mm:ss</code>, <code>EEEE</code>, <code>do</code>, <code>xxx</code> and <code>PPpp</code>, and accepts a date-fns locale object as <code>options.locale</code>. It is not a complete date-fns replacement; locale-sensitive output depends on runtime ICU data and the selected locale.</p></details>
         <details><summary>Is it tree-shakeable?</summary><p>Yes. The package is side-effect free and every utility is a named export, so bundlers drop what you do not import.</p></details>
       </div>
     </div>
@@ -299,13 +323,13 @@ formatCurrency("12345678901234567890.129", "USD");
 
 <footer>
   <div class="wrap foot">
-    <span>MIT licensed. Version 0.4.2.</span>
+    <span>MIT licensed. <!-- package-metadata:footer-version -->Version 0.5.0<!-- /package-metadata:footer-version -->.</span>
     <nav aria-label="Project links">
-      <a href="https://github.com/PhanHoangQuocTu/fatdevcon-utilities/blob/master/LICENSE">License</a>
-      <a href="https://github.com/PhanHoangQuocTu/fatdevcon-utilities/issues">Issues</a>
-      <a href="https://github.com/PhanHoangQuocTu/fatdevcon-utilities/releases">Releases</a>
-      <a href="https://www.npmjs.com/package/@fatdevcon/utilities">npm</a>
-      <a href="https://github.com/PhanHoangQuocTu/fatdevcon-utilities">GitHub</a>
+      <a href="https://github.com/PhanHoangQuocTu/precisekit/blob/master/LICENSE">License</a>
+      <a href="https://github.com/PhanHoangQuocTu/precisekit/issues">Issues</a>
+      <a href="https://github.com/PhanHoangQuocTu/precisekit/releases">Releases</a>
+      <a href="https://www.npmjs.com/package/@fatdevcon/precisekit">npm</a>
+      <a href="https://github.com/PhanHoangQuocTu/precisekit">GitHub</a>
     </nav>
   </div>
 </footer>

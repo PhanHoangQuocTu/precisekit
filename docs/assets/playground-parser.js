@@ -9,6 +9,10 @@ export const PLAYGROUND_FUNCTIONS = new Set([
   "strip", "lstrip", "rstrip", "title", "firstChar", "lastChar", "normalizeWhitespace",
   "safeToNumber", "safeToInteger", "safeToBigInt", "safeToBoolean", "safeToString",
   "slugify", "truncateText", "maskString", "camelCase", "escapeRegExp", "setByPath", "parseBytes",
+  "toMinorUnits", "fromMinorUnits", "allocateMoney", "calculateTax", "applyDiscount",
+  "parseLocalizedNumber", "parseLocalizedCurrency", "parseLocalizedPercent",
+  "isBusinessDay", "addBusinessDays", "differenceInBusinessDays", "nextBusinessDay",
+  "isSafeRedirectUrl", "getSafeRedirectTarget", "redactSensitiveFields", "sanitizeUrlForLogging",
 ]);
 
 const MAX_SOURCE_LENGTH = 10_000;

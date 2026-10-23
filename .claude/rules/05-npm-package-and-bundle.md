@@ -14,7 +14,7 @@ Treat the **installed consumer experience** as the product. Raw output bytes, ta
 - Avoid import-time computation, mutation, environment reads, Node polyfills, optional feature eager imports, cycles and heavyweight shared barrel patterns.
 - Adding a public function must not force unrelated large Intl datasets, numeric algorithms or date implementations into a consumer bundle when tree-shaking should remove them.
 - Preserve readable, auditable non-minified distribution unless there is explicit agreement to change it; consumers can minify downstream. Never equate enabling tsup `minify` with verified application-size improvement.
-- Compare the **same** small consumer fixture (`import { helper } from "@fatdevcon/utilities"`) before/after with an existing or approved bundler configuration; record raw/minified/gzip and selected-import size only if actually measured.
+- Compare the **same** small consumer fixture (`import { helper } from "@fatdevcon/precisekit"`) before/after with an existing or approved bundler configuration; record raw/minified/gzip and selected-import size only if actually measured.
 - If baseline or tooling is missing, say *not measured*; do not install a benchmark suite, make up a budget or promise zero bundle growth.
 - Optimize algorithms only where a correctness-preserving change has measured payoff; test worst cases and memory for large BigInt/decimal input when relevant.
 

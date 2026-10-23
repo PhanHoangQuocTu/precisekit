@@ -1,4 +1,4 @@
-/* @fatdevcon/utilities documentation. One memorable element (the drift gauge), everything else stays quiet. */
+/* @fatdevcon/precisekit documentation. One memorable element (the drift gauge), everything else stays quiet. */
 :root {
   color-scheme: light;
   --paper: #f4f6fa;
@@ -89,9 +89,9 @@ code { font-size: 0.9em; }
 .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
 
 /* ---------- top bar ---------- */
-.bar { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.bar { position: sticky; top: 0; z-index: 30; background: var(--paper); }
 .bar-in { display: flex; align-items: center; gap: 20px; min-height: 60px; }
-.brand { font: 600 0.98rem var(--font-mono); color: var(--ink); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
+.brand { font: 600 0.98rem var(--font-body); color: var(--ink); text-decoration: none; letter-spacing: -0.02em; white-space: nowrap; }
 .brand span { color: var(--muted); font-weight: 400; }
 .nav { display: flex; gap: 4px; margin-left: 12px; }
 .nav a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 0.95rem; padding: 6px 11px; border-radius: 7px; }
@@ -293,3 +293,23 @@ footer { border-top: 1px solid var(--line); padding: 34px 0 54px; color: var(--m
 .foot a:hover { color: var(--ink); }
 .noscript { background: var(--sunk); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
 @media (max-width: 480px) { .install-cmd code { font-size: 0.8rem; } }
+
+/* Reference disclosure keeps a large API navigable without changing permalinks. */
+.fn > summary { cursor: pointer; list-style: none; padding: 16px 0; min-height: 48px; }
+.fn > summary::-webkit-details-marker { display: none; }
+.fn > summary::after { content: "+"; margin-left: auto; }
+.fn[open] > summary::after { content: "−"; }
+.fn:not([open]) { margin-bottom: 8px; }
+.fn > summary h4 { font-family: var(--font-body); overflow-wrap: anywhere; }
+.fn .related { margin-top: 24px; font-size: 1rem; }
+.fn .related a { margin-right: 8px; }
+.category-label { display: block; margin-top: 16px; font-size: 1rem; }
+#category-filter { width: 100%; min-height: 44px; font: inherit; background: var(--surface); color: var(--ink); padding: 8px; }
+#search-status { margin: 8px 0; font-size: 0.95rem; }
+.fn p.desc, .group-note { color: var(--ink); }
+.fn .code pre, .fn table { font-size: 0.95rem; }
+.gauge { box-shadow: none; }
+.play-bar { flex-wrap: wrap; }
+.play-bar .tabs { flex-wrap: wrap; }
+h1 { max-width: 19ch; text-wrap: balance; }
+@media (max-width: 480px) { .bar-in { gap: 8px; } .brand { font-size: 0.9rem; } .bar-tools { gap: 3px; } .icon-link { padding: 0 6px; } }

@@ -1,6 +1,29 @@
 # Changelog
 
-All notable changes to `@fatdevcon/utilities`. The project follows [semantic versioning](https://semver.org/).
+All notable changes to `@fatdevcon/precisekit`. The project follows [semantic versioning](https://semver.org/).
+
+## 0.5.0
+
+### Added
+
+- Exact money conversion, proportional allocation, inclusive/exclusive taxes and fixed/percentage discounts with explicit currency precision policies.
+- Typed record/array normalization with indexed errors, own-property validation and safe failure results.
+- Strict locale-aware number, currency and percent parsers that preserve exact decimal text.
+- Ordered concurrency-limited mapping, settled mapping and lazy asynchronous batches with AbortSignal support.
+- Timezone-independent business-calendar helpers with configurable weekends and caller-supplied holidays.
+- Redirect validation, safe fallback selection, cycle-preserving field redaction and URL sanitization for logs.
+
+### Changed
+
+- Renamed the package from `@fatdevcon/utilities` to `@fatdevcon/precisekit` and moved the active repository and documentation URLs to the PreciseKit identity.
+- Updated documentation synchronization, package, tarball and static-site verification to resolve current package identity, version and URLs from authoritative manifest metadata instead of stale release literals.
+- Renamed the checked-in playground bundle to `docs/assets/precisekit.mjs` and synchronized installation commands, imports, SEO metadata and crawler URLs.
+
+### Compatibility
+
+- Existing functions, signatures, ESM/CommonJS behavior, TypeScript declarations, exact numeric behavior and root export paths are unchanged after updating the package import name.
+- The package retains zero runtime dependencies, readable unminified output and side-effect-free named exports.
+- Historical release notes continue to use the package name under which those versions were published.
 
 ## 0.4.2
 

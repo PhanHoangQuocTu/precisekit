@@ -20,6 +20,8 @@ jobs:
       - run: npm ci
       - run: npm run check
       - run: npm run docs:sync
+      - name: Generated documentation must already be synchronized
+        run: git diff --exit-code -- docs README.md .github/repository-metadata.json
       - run: npm run test:package
       - run: npm run test:docs
       - run: npm run test:site
@@ -28,6 +30,23 @@ jobs:
         with:
           name: dist
           path: dist
+
+  packed-consumers:
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.5
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:bun
+      - run: npm run test:tarball
 
   compatibility:
     needs: verify

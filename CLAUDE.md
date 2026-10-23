@@ -1,10 +1,10 @@
-# CLAUDE.md — @fatdevcon/utilities
+# CLAUDE.md — @fatdevcon/precisekit
 
 > Repository-wide instructions for Claude Code. This is a **published TypeScript utility library**, not a frontend application or API server. Prioritize correct public contracts, zero runtime dependencies, small consumer bundles, stable types and safe releases.
 
 ## Project facts — verify against the working tree
 
-- Package: `@fatdevcon/utilities`; public source entry: `src/index.ts`; implementation commonly lives under `src/modules/`, types under `src/types/`, tests under `src/__tests__/`.
+- Package: `@fatdevcon/precisekit`; public source entry: `src/index.ts`; implementation commonly lives under `src/modules/`, types under `src/types/`, tests under `src/__tests__/`.
 - Existing stack on the public repository: **TypeScript, tsup (ESM/CJS JS), Rollup DTS, Jest, ESLint, npm**, GitHub Actions and a static `docs/` website/playground.
 - Known build outputs: `dist/index.mjs`, `dist/index.js`, `dist/index.d.mts`, `dist/index.d.ts`. `package.json` and the real build output are authoritative if this changes.
 - Supported claims to preserve until deliberately revised: **no runtime dependencies**, Node.js >=18, supported Bun versions and modern browsers through bundlers, tree-shakeable side-effect-free exports.

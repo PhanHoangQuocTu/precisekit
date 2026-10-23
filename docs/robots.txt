@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://phanhoangquoctu.github.io/fatdevcon-utilities/sitemap.xml
+Sitemap: https://phanhoangquoctu.github.io/precisekit/sitemap.xml

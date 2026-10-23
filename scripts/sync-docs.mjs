@@ -1,8 +1,160 @@
-// Copies the built ESM bundle next to the documentation so the live demos run the exact package that ships.
-// Run after `npm run build`; `npm run test:site` fails when the copy is stale.
-import { copyFile, mkdir } from "node:fs/promises";
+// Synchronizes package-owned documentation metadata and copies the built ESM bundle used by the playground.
+// Run after `npm run build`; `npm run test:site` fails when any generated value is stale.
+import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
+import { copyFile, mkdir, readFile, writeFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+import { GROUPS } from "../docs/api-data.js";
+import { measureBundle } from "./measure-bundle.mjs";
 
-const target = new URL("../docs/assets/fatdevcon-utilities.mjs", import.meta.url);
+const read = (path) => readFile(new URL(path, import.meta.url), "utf8");
+const metadata = JSON.parse(await read("../package.json"));
+const { name, version, homepage, branding } = metadata;
+for (const key of ["displayName", "tagline", "seoTitle", "seoDescription"]) {
+  assert.equal(typeof branding?.[key], "string", `branding.${key} is required`);
+  assert.ok(branding[key].trim(), `branding.${key} must not be empty`);
+}
+const repository = metadata.repository.url.replace(/^git\+/, "").replace(/\.git$/, "");
+const npmUrl = `https://www.npmjs.com/package/${name}`;
+const bundleName = `${name.split("/").at(-1)}.mjs`;
+const target = new URL(`../docs/assets/${bundleName}`, import.meta.url);
+const [scope, packageBase] = name.split("/");
+const escapeHtml = (value) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const scriptJson = value => JSON.stringify(value).replace(/</g, "\\u003c");
+const changelog = await read("../CHANGELOG.md");
+const release = changelog.split(/^## /m).find((entry) => entry.split("\n")[0].trim() === version);
+assert.ok(release, `CHANGELOG.md must describe ${version}`);
+const releaseSummary = release.split("\n").filter((line) => line.startsWith("- ")).map((line) => `<li>${escapeHtml(line.slice(2)).replace(/`([^`]+)`/g, "<code>$1</code>")}</li>`).join("");
+const esm = await read("../dist/index.mjs");
+const esmSha256 = createHash("sha256").update(esm).digest("hex");
+let measurement;
+try { measurement = JSON.parse(await read("../docs/bundle-data.json")); } catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
+if (!measurement || measurement.schemaVersion !== 1 || measurement.esmSha256 !== esmSha256 || measurement.version !== version || measurement.name !== name) {
+  measurement = await measureBundle(fileURLToPath(new URL("../dist/index.mjs", import.meta.url)));
+  await writeFile(new URL("../docs/bundle-data.json", import.meta.url), JSON.stringify(measurement, null, 2) + "\n");
+}
+const full = measurement.consumers.full;
+const kb = (bytes) => `${(bytes / 1000).toFixed(1)} kB`;
+const apiCount = GROUPS.reduce((sum, group) => sum + group.fns.length, 0);
+
+const replaceOne = (source, pattern, replacement, label) => {
+  const matches = [...source.matchAll(new RegExp(pattern.source, pattern.flags.includes("g") ? pattern.flags : pattern.flags + "g"))];
+  assert.equal(matches.length, 1, `${label} must occur exactly once`);
+  let count = 0;
+  const output = source.replace(pattern, (...args) => {
+    count++;
+    return typeof replacement === "function" ? replacement(...args) : replacement;
+  });
+  assert.equal(count, 1, `${label} must occur exactly once`);
+  return output;
+};
+
+const replaceMarker = (source, key, value) => {
+  const start = `<!-- package-metadata:${key} -->`;
+  const end = `<!-- /package-metadata:${key} -->`;
+  const startAt = source.indexOf(start);
+  const endAt = source.indexOf(end);
+  assert.ok(startAt >= 0 && endAt > startAt, `Missing package metadata marker: ${key}`);
+  assert.equal(source.indexOf(start, startAt + start.length), -1, `Duplicate package metadata marker: ${key}`);
+  assert.equal(source.indexOf(end, endAt + end.length), -1, `Duplicate package metadata end marker: ${key}`);
+  return source.slice(0, startAt + start.length) + value + source.slice(endAt);
+};
+
+let site = await read("../docs/index.html");
+site = replaceOne(site, /<title>[^<]+<\/title>/, `<title>${escapeHtml(branding.seoTitle)}</title>`, "document title");
+for (const [attribute, key, value] of [
+  ["name", "description", branding.seoDescription],
+  ["property", "og:title", branding.seoTitle],
+  ["property", "og:description", branding.seoDescription],
+  ["name", "twitter:description", branding.seoDescription],
+]) {
+  site = replaceOne(site, new RegExp(`<meta ${attribute}="${key}" content="[^"]+">`), `<meta ${attribute}="${key}" content="${escapeHtml(value)}">`, key);
+}
+site = replaceOne(site, /<link rel="canonical" href="[^"]+">/, `<link rel="canonical" href="${homepage}">`, "canonical URL");
+site = replaceOne(site, /<meta property="og:site_name" content="[^"]+">/, `<meta property="og:site_name" content="${escapeHtml(branding.displayName)}">`, "Open Graph site name");
+site = replaceOne(site, /<meta property="og:url" content="[^"]+">/, `<meta property="og:url" content="${homepage}">`, "Open Graph URL");
+site = replaceOne(site, /<meta name="twitter:title" content="[^"]+">/, `<meta name="twitter:title" content="${escapeHtml(branding.seoTitle)}">`, "Twitter title");
+for (const [key, value] of [["hero-name", branding.displayName], ["tagline", branding.tagline], ["description", metadata.description]]) {
+  site = replaceMarker(site, key, escapeHtml(value));
+}
+site = replaceOne(site, /<a class="brand" href="#top" aria-label="[^"]+"><span>[^<]+<\/span>[^<]+<\/a>/, `<a class="brand" href="#top" aria-label="${name} home"><span>${scope}/</span>${packageBase}</a>`, "site brand");
+site = replaceOne(site, /<code id="install-cmd">[^<]+<\/code>/, `<code id="install-cmd">npm install ${name}</code>`, "primary install command");
+site = replaceOne(site, /(<button class="copy" id="install-copy"[^>]+data-copy-text=")[^"]+("[^>]*>)/, (_match, prefix, suffix) => `${prefix}npm install ${name}${suffix}`, "copied install command");
+site = replaceOne(site, /(<div class="read-label"><span>)[^<]+(<\/span><code id="exact-expr">)/, (_match, prefix, suffix) => `${prefix}${name}${suffix}`, "live-demo package label");
+site = replaceOne(site, /<a href="[^"]+\/CHANGELOG\.md">changelog<\/a>/, `<a href="${repository}/blob/master/CHANGELOG.md">changelog</a>`, "changelog link");
+site = replaceOne(site, /<a href="[^"]+#api-index">README overview<\/a>/, `<a href="${repository}#api-index">README overview</a>`, "README overview link");
+const footerMatch = site.match(/<footer>[\s\S]*?<\/footer>/);
+assert.ok(footerMatch, "site footer required");
+let footer = footerMatch[0];
+for (const [label, href] of [
+  ["License", `${repository}/blob/master/LICENSE`],
+  ["Issues", metadata.bugs.url],
+  ["Releases", `${repository}/releases`],
+  ["npm", npmUrl],
+  ["GitHub", repository],
+]) {
+  footer = replaceOne(footer, new RegExp(`<a href="[^"]+">${label}<\\/a>`), `<a href="${href}">${label}</a>`, `${label} footer link`);
+}
+site = replaceOne(site, /<footer>[\s\S]*?<\/footer>/, footer, "site footer");
+site = replaceMarker(site, "release-title", `Release ${version}`);
+site = replaceMarker(site, "release-summary", `<ul>${releaseSummary}</ul>`);
+site = replaceMarker(site, "footer-version", `Version ${version}`);
+site = replaceMarker(site, "bundle-fact", `<dt>${kb(full.gzip)}</dt><dd>Full-root browser bundle, minified + gzip. Named imports are measured separately.</dd>`);
+site = replaceMarker(site, "bundle-current", `<span>${version}, no dependencies</span><b>${kb(full.gzip)} gzip</b>`);
+site = replaceMarker(site, "bundle-note", `${version}: ${kb(full.raw)} minified / ${kb(full.gzip)} gzip / ${kb(full.brotli)} Brotli. Measured with esbuild ${measurement.esbuild}; historical figures retain their original fixtures.`);
+site = replaceOne(site, /<span id="api-count">\d+<\/span>/, `<span id="api-count">${apiCount}</span>`, "documented API count");
+site = replaceOne(site, /<script type="application\/ld\+json">({"@context":"https:\/\/schema\.org","@type":"SoftwareSourceCode"[\s\S]*?})<\/script>/, (_match, json) => {
+  const software = JSON.parse(json);
+  Object.assign(software, {
+    name: branding.displayName,
+    alternateName: name,
+    description: metadata.description,
+    softwareVersion: version,
+    license: `${repository}/blob/master/LICENSE`,
+    codeRepository: repository,
+    url: homepage,
+    downloadUrl: npmUrl,
+  });
+  return `<script type="application/ld+json">${scriptJson(software)}</script>`;
+}, "SoftwareSourceCode structured data");
+// FAQ structured data must describe the visible answers, not a second editorial copy.
+const plainText = html => html.replace(/<[^>]+>/g, "").replace(/&(amp|lt|gt|quot|apos|#39|nbsp);/g,
+  (_match, entity) => ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'", nbsp: "\u00a0" })[entity]).replace(/\s+/g, " ").trim();
+const faqSection = site.match(/<section class="block" id="faq">[\s\S]*?<\/section>/)?.[0] ?? "";
+const faq = [...faqSection.matchAll(/<details>\s*<summary>([\s\S]*?)<\/summary>\s*<p>([\s\S]*?)<\/p>\s*<\/details>/g)].map(([, question, answer]) => ({
+  "@type": "Question", name: plainText(question), acceptedAnswer: { "@type": "Answer", text: plainText(answer) },
+}));
+assert.ok(faq.length > 0, "visible FAQ answers required");
+assert.equal(faq.length, [...faqSection.matchAll(/<details\b/g)].length, "every visible FAQ must be parsed");
+site = replaceOne(site, /<script type="application\/ld\+json">\{"@context":"https:\/\/schema\.org","@type":"FAQPage"[\s\S]*?<\/script>/,
+  `<script type="application/ld+json">${scriptJson({ "@context": "https://schema.org", "@type": "FAQPage", mainEntity: faq })}</script>`, "FAQ structured data");
+await writeFile(new URL("../docs/index.html", import.meta.url), site);
+
+let readme = await read("../README.md");
+for (const [key, value] of [["display-name", branding.displayName], ["tagline", branding.tagline], ["description", metadata.description]]) {
+  readme = replaceMarker(readme, key, escapeHtml(value));
+}
+await writeFile(new URL("../README.md", import.meta.url), readme);
+// Reviewable desired GitHub About settings; synchronization never calls GitHub.
+await mkdir(new URL("../.github/", import.meta.url), { recursive: true });
+await writeFile(new URL("../.github/repository-metadata.json", import.meta.url), JSON.stringify({
+  name: packageBase, description: metadata.description, homepage, topics: ["typescript", "utilities", "exact-arithmetic", "zero-dependency", "precisekit"],
+}, null, 2) + "\n");
+
+let app = await read("../docs/assets/app.js");
+const installCommands = `{ npm: "npm install ${name}", pnpm: "pnpm add ${name}", yarn: "yarn add ${name}", bun: "bun add ${name}" }`;
+app = replaceOne(app, /const installCommands = \{[^\n]+\};/, `const installCommands = ${installCommands};`, "playground install commands");
+app = replaceOne(app, /await import\("\.\/[^"/]+\.mjs"\)/, `await import("./${bundleName}")`, "playground bundle import");
+await writeFile(new URL("../docs/assets/app.js", import.meta.url), app);
+
+const robots = replaceOne(await read("../docs/robots.txt"), /^Sitemap: .*$/m, `Sitemap: ${homepage}sitemap.xml`, "robots sitemap");
+await writeFile(new URL("../docs/robots.txt", import.meta.url), robots);
+
+const sitemap = replaceOne(await read("../docs/sitemap.xml"), /<loc>[^<]+<\/loc>/, `<loc>${homepage}</loc>`, "sitemap location");
+await writeFile(new URL("../docs/sitemap.xml", import.meta.url), sitemap);
+
 await mkdir(new URL("../docs/assets/", import.meta.url), { recursive: true });
 await copyFile(new URL("../dist/index.mjs", import.meta.url), target);
-console.log("Synced dist/index.mjs to docs/assets/fatdevcon-utilities.mjs");
+console.log(`Synced ${name}@${version} metadata and dist/index.mjs to docs/assets/${bundleName}`);

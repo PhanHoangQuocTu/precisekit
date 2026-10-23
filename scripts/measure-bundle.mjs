@@ -1,14 +1,15 @@
 // Reproducible browser-consumer sizes; uses esbuild already provided by tsup.
 // Run after build. Optional argument selects another ESM artifact for comparison.
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
-import { pathToFileURL } from "node:url";
-import { gzipSync } from "node:zlib";
+import { pathToFileURL, fileURLToPath } from "node:url";
+import { gzipSync, brotliCompressSync } from "node:zlib";
 import { runInNewContext } from "node:vm";
 import { build, version as esbuildVersion } from "esbuild";
 
-const entry = resolve(process.argv[2] ?? "dist/index.mjs");
+export async function measureBundle(entry = resolve("dist/index.mjs")) {
 const api = await import(pathToFileURL(entry));
 const fixtures = {
   full: null,
@@ -26,9 +27,18 @@ const fixtures = {
   safeToBoolean: ["safeToBoolean"],
   safeToString: ["safeToString"],
   cleaningMixed: ["strip", "title", "firstChar", "lastChar", "safeToNumber"],
+  money: ["toMinorUnits", "fromMinorUnits", "allocateMoney", "calculateTax", "applyDiscount"],
+  locale: ["parseLocalizedNumber", "parseLocalizedCurrency", "parseLocalizedPercent"],
+  normalization: ["normalizeRecord", "normalizeArray"],
+  concurrency: ["mapConcurrent", "mapSettledConcurrent", "batchAsync"],
+  businessCalendar: ["isBusinessDay", "addBusinessDays", "differenceInBusinessDays", "nextBusinessDay"],
+  security: ["isSafeRedirectUrl", "getSafeRedirectTarget", "redactSensitiveFields", "sanitizeUrlForLogging"],
 };
-const sizes = bytes => ({ raw: bytes.length, gzip: gzipSync(bytes, { level: 9 }).length });
-const report = { node: process.version, esbuild: esbuildVersion, entry, artifacts: {}, consumers: {} };
+const sizes = bytes => ({ raw: bytes.length, gzip: gzipSync(bytes, { level: 9 }).length, brotli: brotliCompressSync(bytes).length });
+const manifest = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));
+const report = { name: manifest.name, version: manifest.version, node: process.version, esbuild: esbuildVersion,
+  schemaVersion: 1, entry: "dist/index.mjs", esmSha256: createHash("sha256").update(await readFile(entry)).digest("hex"), exportCount: Object.keys(api).length,
+  artifacts: {}, consumers: {} };
 for (const name of ["index.mjs", "index.js", "index.d.ts", "index.d.mts"]) {
   report.artifacts[name] = sizes(await readFile(new URL(name, pathToFileURL(entry))));
 }
@@ -63,4 +73,14 @@ for (const [name, names] of Object.entries(fixtures)) {
   }
   report.consumers[name] = sizes(code);
 }
-console.log(JSON.stringify(report, null, 2));
+return report;
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const args = process.argv.slice(2);
+  const outputAt = args.indexOf("--output");
+  const output = outputAt >= 0 ? args.splice(outputAt, 2)[1] : undefined;
+  const report = await measureBundle(resolve(args[0] ?? "dist/index.mjs"));
+  console.log(JSON.stringify(report, null, 2));
+  if (output) await writeFile(resolve(output), JSON.stringify(report, null, 2) + "\n");
+}

@@ -14,8 +14,9 @@ The maintainer requires a **single version bump per completed logical repository
 - Update `CHANGELOG.md` with changes grouped under the new release, observable public behavior, deprecations and migration notes for breaking changes.
 - Synchronize README public API tables/snippets, package capabilities and installation claims. Include new functions only when actually exported, documented and tested.
 - Sync documentation UI in `docs/index.html`, structured-data `softwareVersion`, footer/version labels, release sections and any API list in `docs/api-data.js` where relevant.
-- Documentation's playground runs a copied build artifact, not directly imported source: after a successful build use `npm run docs:sync` to refresh `docs/assets/fatdevcon-utilities.mjs`; `npm run test:site` should verify it matches `dist/index.mjs`.
+- Documentation's playground runs a copied build artifact, not directly imported source: after a successful build use `npm run docs:sync` to refresh manifest-owned site metadata and `docs/assets/precisekit.mjs`; `npm run test:site` should verify both metadata and bundle consistency.
 - Maintain truthful SEO/metadata descriptions, canonical URL, sitemap and robots entries when changing site routes; do not keyword-stuff or invent functionality.
+- Treat `package.json` description/branding as the source for current positioning. Run `docs:sync` to update README, visible site copy, SEO/social metadata, JSON-LD and the reviewable `.github/repository-metadata.json` About proposal. This never changes remote GitHub settings. Keep historical migration versions fixed and current bundle claims tied to `docs/bundle-data.json` and its build hash.
 - Keep `THIRD_PARTY_NOTICES.md` and copyright/license attributions accurate when changing bundled data sources or licensing requirements.
 
 ## Avoid the hard-coded version trap

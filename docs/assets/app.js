@@ -1,13 +1,13 @@
 // Enhancements for the documentation page. The page is complete without JavaScript; this adds the live
 // drift gauge, the playground, the searchable API reference, copy buttons and the theme switch.
-// The demos run the real, unminified package from ./fatdevcon-utilities.mjs (a copy of dist/index.mjs).
+// The demos run the real, unminified package from ./precisekit.mjs (a copy of dist/index.mjs).
 
 import { GROUPS } from "../api-data.js";
 import { runPlayground } from "./playground-parser.js";
 
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-const esc = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const esc = (value) => String(value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
 const safeStorage = {
   get(key) { try { return localStorage.getItem(key); } catch { return null; } },
@@ -47,7 +47,7 @@ document.addEventListener("click", async (event) => {
 });
 
 // ---------------------------------------------------------------- install tabs
-const installCommands = { npm: "npm install @fatdevcon/utilities", pnpm: "pnpm add @fatdevcon/utilities", yarn: "yarn add @fatdevcon/utilities", bun: "bun add @fatdevcon/utilities" };
+const installCommands = { npm: "npm install @fatdevcon/precisekit", pnpm: "pnpm add @fatdevcon/precisekit", yarn: "yarn add @fatdevcon/precisekit", bun: "bun add @fatdevcon/precisekit" };
 $$(".install-tabs button").forEach((tab) => {
   tab.addEventListener("click", () => {
     $$(".install-tabs button").forEach((other) => other.setAttribute("aria-selected", String(other === tab)));
@@ -83,7 +83,7 @@ const codeBlock = (code, extraClass = "") =>
 // ---------------------------------------------------------------- load the package
 let lib = null;
 try {
-  lib = await import("./fatdevcon-utilities.mjs");
+  lib = await import("./precisekit.mjs");
   knownFunctions = new Set(Object.keys(lib));
 } catch (error) {
   console.warn("Live demos are disabled because the package build could not be loaded:", error);
@@ -204,6 +204,10 @@ safeToBigInt("9007199254740993")
 safeToBoolean(" FALSE ")
 safeToString({ name: "An" })`,
   Money: `// Supported function calls and data literals only.
+toMinorUnits("123.45", { currency: "USD" })
+allocateMoney("10.00", [1, 1, 1], { currency: "USD" })
+calculateTax("100.00", "0.08", { currency: "USD", mode: "exclusive" })
+applyDiscount("100.00", { type: "percentage", value: "15" }, { currency: "USD" })
 summary(0.1, 0.2)
 multiply("19.99", 3)
 divide("1", "3", { precision: 12 })
@@ -219,6 +223,7 @@ fibonacci(100n)
 gcd("0.5", "0.25")
 formatBytes("1500000000000000000000000000000")`,
   Dates: `formatDate("2026-01-31T09:30:00", "EEEE, do MMMM yyyy HH:mm")
+addBusinessDays("2026-12-24", 1, { holidays: ["2026-12-25"] })
 formatDate(addMonths("2026-01-31T09:30:00", 1), "yyyy-MM-dd")
 differenceInCalendarDays("2026-12-25", "2026-01-31")
 formatDate("2026-01-15T17:30:00Z", "HH:mm xxx", { timeZone: "Asia/Ho_Chi_Minh" })
@@ -232,6 +237,13 @@ camelCase("hello big world")
 escapeRegExp("1+1=2 (really?)")
 setByPath({ a: 1 }, "b.c[0]", true)
 parseBytes("1.5 GiB")`,
+  Locale: `parseLocalizedNumber("1.234,56", { locale: "de-DE" })
+parseLocalizedCurrency("$1,234.56", { locale: "en-US", currency: "USD" })
+parseLocalizedPercent("12.5%", { locale: "en-US" })`,
+  Security: `isSafeRedirectUrl("/dashboard", { allowedOrigins: ["https://example.com"] })
+getSafeRedirectTarget("https://evil.example", { fallback: "/", allowedOrigins: ["https://example.com"] })
+redactSensitiveFields({ password: "secret", user: "minh" }, { keys: ["password"] })
+sanitizeUrlForLogging("https://example.com/?token=secret&page=1")`,
 };
 
 const formatResult = (value) => {
@@ -283,7 +295,6 @@ if (area && output && lib) {
 }
 
 // ---------------------------------------------------------------- API reference
-const NEW_IN = new Set(["parseISO", "addDays", "addMonths", "startOfDay", "endOfDay", "differenceInCalendarDays", "parseDuration", "parseBytes", "setByPath", "escapeRegExp"]);
 const params = (list) => `<h5>Parameters</h5><div class="scroll"><table><tr><th>Name</th><th>Type</th><th>Default</th><th>Description</th></tr>${list.map((q) => `<tr><td class="name"><code>${esc(q.name)}</code></td><td class="type"><code>${esc(q.type)}</code></td><td>${q.def === undefined ? "<em>required</em>" : `<code>${esc(q.def)}</code>`}</td><td>${esc(q.desc)}</td></tr>`).join("")}</table></div>`;
 const throwsList = (list) => `<h5>Throws</h5><ul class="throws">${list.map((t) => `<li>${t.code ? `<span class="err">${esc(t.code)}</span>` : `<span class="err plain">${esc(t.kind)}</span>`}<span><strong>${esc(t.kind)}</strong> when ${esc(t.when)}</span></li>`).join("")}</ul>`;
 const extraTable = (t) => `<div class="scroll"><table><tr>${t.head.map((h) => `<th>${esc(h)}</th>`).join("")}</tr>${t.rows.map((r) => `<tr>${r.map((c, i) => `<td>${i === 0 ? `<code>${esc(c)}</code>` : esc(c)}</td>`).join("")}</tr>`).join("")}</table></div>`;
@@ -294,20 +305,22 @@ if (reference) {
   reference.innerHTML = GROUPS.map(
     (g) => `<section id="${g.id}" class="group"><h3 class="group-title">${esc(g.title)}</h3>${g.note ? `<p class="group-note">${esc(g.note)}</p>` : ""}${g.fns
       .map(
-        (f) => `<article class="fn" id="${f.name}" data-name="${f.name.toLowerCase()}"><div class="fn-head"><h4><a href="#${f.name}">${f.name}</a></h4>${NEW_IN.has(f.name) ? '<span class="badge">New in 0.3.5</span>' : ""}</div><div class="code sig-block"><pre><code>${highlight(f.sig)}</code></pre></div><p class="desc">${esc(f.desc)}</p>${f.params?.length ? params(f.params) : ""}${f.table ? extraTable(f.table) : ""}${f.returns ? `<h5>Returns</h5><p>${esc(f.returns)}</p>` : ""}${f.throws?.length ? throwsList(f.throws) : ""}<h5>Example</h5>${codeBlock(f.ex)}</article>`
+        (f) => `<details class="fn" id="${f.name}" data-name="${f.name.toLowerCase()}" data-group="${esc(g.id)}" data-search="${esc(`${f.name} ${g.title} ${f.desc}`.toLowerCase())}"><summary class="fn-head"><h4>${f.name}</h4><a href="#${f.name}" aria-label="Permalink to ${f.name}">#</a></summary><div class="code sig-block"><pre><code>${highlight(f.sig)}</code></pre></div><p class="desc">${esc(f.desc)}</p>${f.params?.length ? params(f.params) : ""}${f.table ? extraTable(f.table) : ""}${f.returns ? `<h5>Returns</h5><p>${esc(f.returns)}</p>` : ""}${f.throws?.length ? throwsList(f.throws) : ""}<h5>Example</h5>${codeBlock(f.ex)}<p class="related">Related: ${g.fns.filter(other => other.name !== f.name).slice(0, 3).map(other => `<a href="#${other.name}">${other.name}</a>`).join(", ")}</p></details>`
       )
       .join("")}</section>`
   ).join("");
-  nav.innerHTML = GROUPS.map((g) => `<h3><a href="#${g.id}">${esc(g.title)}</a></h3><ul>${g.fns.map((f) => `<li data-name="${f.name.toLowerCase()}"><a href="#${f.name}">${f.name}</a></li>`).join("")}</ul>`).join("");
+  nav.innerHTML = GROUPS.map((g) => `<h3><a href="#${g.id}">${esc(g.title)}</a></h3><ul>${g.fns.map((f) => `<li data-name="${f.name.toLowerCase()}" data-group="${esc(g.id)}" data-search="${esc(`${f.name} ${g.title} ${f.desc}`.toLowerCase())}"><a href="#${f.name}">${f.name}</a></li>`).join("")}</ul>`).join("");
+  $("#category-filter").innerHTML += GROUPS.map(g => `<option value="${esc(g.id)}">${esc(g.title)}</option>`).join("");
   $("#api-count").textContent = String(GROUPS.reduce((sum, g) => sum + g.fns.length, 0));
 }
 
 const search = $("#search");
+const category = $("#category-filter");
 const filter = () => {
   const query = search.value.trim().toLowerCase();
   let shown = 0;
   $$("#api [data-name]").forEach((element) => {
-    const match = element.dataset.name.includes(query);
+    const match = element.dataset.search.includes(query) && (!category.value || element.dataset.group === category.value);
     element.hidden = !match;
     if (match && element.classList.contains("fn")) shown++;
   });
@@ -319,8 +332,11 @@ const filter = () => {
     if (list) list.hidden = !visible;
   });
   $("#empty").hidden = shown > 0;
+  $("#search-status").textContent = `${shown} functions`;
 };
 search?.addEventListener("input", filter);
+category?.addEventListener("change", filter);
+filter();
 addEventListener("keydown", (event) => {
   const typing = /^(input|textarea|select)$/i.test(event.target.tagName) || event.target.isContentEditable;
   if (event.key === "/" && !typing && !event.metaKey && !event.ctrlKey) {
@@ -359,4 +375,17 @@ const fnObserver = new IntersectionObserver(
   { rootMargin: "-20% 0px -75%" }
 );
 $$("#api-reference .fn").forEach((fn) => fnObserver.observe(fn));
-if (location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+const revealHash = () => {
+  let id;
+  try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+  const target = document.getElementById(id);
+  if (!target) return;
+  if (target.classList.contains("fn")) {
+    search.value = ""; category.value = target.dataset.group; filter(); target.open = true;
+  } else if (target.classList.contains("group")) {
+    search.value = ""; category.value = target.id; filter();
+  }
+  target.scrollIntoView();
+};
+addEventListener("hashchange", revealHash);
+if (location.hash) revealHash();
