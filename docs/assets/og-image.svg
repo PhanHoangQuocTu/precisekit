@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="t d">
+  <title id="t">PreciseKit</title>
+  <desc id="d">In JavaScript, 0.1 + 0.2 gives 0.30000000000000004. PreciseKit summary(0.1, 0.2) gives 0.3.</desc>
+  <rect width="1200" height="630" fill="#0c1424"/>
+  <rect x="0.5" y="0.5" width="1199" height="629" fill="none" stroke="#1f2c45"/>
+  <g font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif">
+    <text x="80" y="118" font-size="30" fill="#8a9bb6"><tspan>@fatdevcon/</tspan><tspan fill="#dbe5f5" font-weight="600">precisekit</tspan></text>
+    <text x="80" y="236" font-size="104" font-weight="760" fill="#ffffff" letter-spacing="-4">PreciseKit</text>
+    <text x="80" y="298" font-size="38" font-weight="500" fill="#dbe5f5">Exact, safe and reliable</text>
+    <text x="80" y="346" font-size="38" font-weight="500" fill="#dbe5f5">TypeScript utilities</text>
+  </g>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', 'Liberation Mono', monospace">
+    <line x1="80" y1="404" x2="1120" y2="404" stroke="#1f2c45"/>
+    <text x="80" y="450" font-size="24" fill="#8a9bb6">JavaScript</text>
+    <text x="360" y="450" font-size="24" fill="#dbe5f5">0.1 + 0.2</text>
+    <text x="716" y="450" font-size="40" font-weight="600" fill="#ffffff">0.3<tspan fill="#ff8b80" text-decoration="underline">0000000000004</tspan></text>
+    <line x1="80" y1="478" x2="1120" y2="478" stroke="#1f2c45"/>
+    <text x="80" y="524" font-size="24" fill="#8a9bb6">PreciseKit</text>
+    <text x="360" y="524" font-size="24" fill="#dbe5f5">summary(0.1, 0.2)</text>
+    <text x="716" y="524" font-size="40" font-weight="600" fill="#5ee0a6">0.3</text>
+    <text x="80" y="584" font-size="22" fill="#8a9bb6">Zero runtime dependencies. ESM and CommonJS. Node 18+, Bun and browsers.</text>
+  </g>
+</svg>

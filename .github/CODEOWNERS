@@ -1,0 +1,10 @@
+# Default owner for everything in the repository.
+*                    @PhanHoangQuocTu
+
+# Release, build and supply-chain surfaces: always require the owner's review.
+/.github/            @PhanHoangQuocTu
+/.github/workflows/  @PhanHoangQuocTu
+/package.json        @PhanHoangQuocTu
+/package-lock.json   @PhanHoangQuocTu
+/scripts/            @PhanHoangQuocTu
+/SECURITY.md         @PhanHoangQuocTu

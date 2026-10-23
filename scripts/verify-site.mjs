@@ -54,6 +54,15 @@ for (const [attribute, key, value] of [
 assert.ok(site.includes(`<meta property="og:site_name" content="${escapeHtml(branding.displayName)}">`), "Open Graph site name must match manifest branding");
 assert.ok(site.includes(`<meta property="og:url" content="${url}">`), "Open Graph URL must match package metadata");
 assert.ok(site.includes(`<meta name="twitter:title" content="${escapeHtml(branding.seoTitle)}">`), "Twitter title must match manifest branding");
+const socialImage = `${url}assets/og-image.png`;
+for (const tag of [
+  `<meta property="og:image" content="${socialImage}">`, `<meta name="twitter:image" content="${socialImage}">`, '<meta name="twitter:card" content="summary_large_image">',
+  '<meta property="og:locale" content="en_US">', '<meta property="og:image:width" content="1200">', '<meta property="og:image:height" content="630">',
+]) assert.equal(site.split(tag).length, 2, `${tag} must occur exactly once`);
+assert.ok(/<meta property="og:image:alt" content="[^"]+">/.test(site) && /<meta name="twitter:image:alt" content="[^"]+">/.test(site), "social image alt text is required");
+const png = await readFile(new URL("../docs/assets/og-image.png", import.meta.url));
+assert.equal(png.subarray(1, 4).toString(), "PNG", "social image must be a PNG file");
+assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630], "social image must be 1200x630");
 assert.ok(site.includes(`<code id="install-cmd">npm install ${name}</code>`), "install command must use the current package name");
 assert.ok(site.includes(`data-copy-text="npm install ${name}"`), "copied install command must use the current package name");
 for (const [, packageSpecifier] of site.matchAll(/(?:from\s+|require\()\s*["'](@[^"']+)["']/g)) {
@@ -99,6 +108,51 @@ assert.equal(measurement.version, version);
 assert.equal(measurement.entry, "dist/index.mjs", "measurement must use a portable artifact identifier");
 assert.equal(measurement.esmSha256, createHash("sha256").update(built).digest("hex"), "measurements must describe the current built ESM");
 assert.ok(marker("bundle-note").includes(`${(measurement.consumers.full.gzip / 1000).toFixed(1)} kB gzip`));
+
+// Bundle comparison: historical rows come from docs/bundle-history.json, the current row from docs/bundle-data.json,
+// and every bar uses one scale (the largest gzip size is the full-width bar).
+const kb = bytes => `${(bytes / 1000).toFixed(1)} kB`;
+const history = JSON.parse(await read("../docs/bundle-history.json"));
+assert.equal(history.schemaVersion, 1, "bundle history schema must be 1");
+const full = measurement.consumers.full;
+const expectedRows = [
+  ...history.entries.filter(entry => entry.version !== version).map(entry => ({ state: "historical", version: entry.version, gzip: entry.gzip, minified: entry.minified, brotli: entry.brotli })),
+  { state: "current", version, gzip: full.gzip, minified: full.raw, brotli: full.brotli },
+];
+assert.ok(history.entries.every(entry => entry.kind === "historical"), "bundle history may only contain historical entries");
+const renderedRows = [...(marker("bundle-history") + marker("bundle-current")).matchAll(/<li class="size-row is-(historical|current)" data-version="([^"]+)">([\s\S]*?)<\/li>/g)].map(([, state, rowVersion, body]) => ({
+  state, version: rowVersion,
+  gzip: /<b class="size-gzip">([\d.]+ kB)<small>gzip<\/small><\/b>/.exec(body)?.[1],
+  width: Number(/<rect class="size-fill" width="(\d+)"/.exec(body)?.[1]),
+  label: /role="img" aria-label="([^"]+)"/.exec(body)?.[1],
+  sub: /<p class="size-sub">([\s\S]*?)<\/p>/.exec(body)?.[1] ?? "",
+}));
+assert.equal(renderedRows.length, expectedRows.length, "size chart must show every historical row plus the current release");
+assert.equal(renderedRows.filter(row => row.state === "current").length, 1, "size chart must have exactly one current row");
+assert.equal(marker("bundle-history").includes('is-current'), false, "historical marker must not contain the current row");
+const scaleMax = Math.max(...expectedRows.map(row => row.gzip));
+expectedRows.forEach((expected, index) => {
+  const row = renderedRows[index];
+  assert.equal(row.version, expected.version, "size chart rows must be chronological with the current release last");
+  assert.equal(row.state, expected.state, `${expected.version} must be rendered as ${expected.state}`);
+  assert.equal(row.gzip, kb(expected.gzip), `${expected.version} gzip figure must match its source`);
+  assert.equal(row.width, Math.round(expected.gzip / scaleMax * 1000), `${expected.version} bar must use the shared scale`);
+  assert.ok(row.label?.startsWith(`${expected.version}, ${expected.state}: ${kb(expected.gzip)} gzip`), `${expected.version} bar needs a text alternative`);
+  assert.ok(row.sub.includes(`${kb(expected.minified)} minified`), `${expected.version} minified figure must match its source`);
+  assert.ok(row.sub.includes(expected.brotli === null ? "Brotli not measured" : `${kb(expected.brotli)} Brotli`), `${expected.version} Brotli figure must match its source`);
+  assert.ok(marker("bundle-methods").includes(`<dt>${expected.version}, ${expected.state}</dt>`), `${expected.version} needs a measurement note`);
+});
+assert.ok(renderedRows.some(row => row.width === 1000), "the largest bar must span the full scale");
+assert.ok(site.includes("Historical fixture") && site.includes("Current measurement"), "size chart legend must separate historical fixtures from the current measurement");
+const consumerKeys = { Money: "money", "Locale parsing": "locale", Security: "security", "Business calendar": "businessCalendar", Normalization: "normalization", Concurrency: "concurrency", compactNullish: "compactNullish", hasByPath: "hasByPath", pickBy: "pickBy" };
+const consumerRows = [...marker("bundle-consumers").matchAll(/<tr><th scope="row">([\s\S]*?)<\/th><td>([^<]+)<\/td><td>([^<]+)<\/td><\/tr>/g)];
+assert.ok(consumerRows.length > 0, "named-import sizes must be rendered");
+for (const [, label, gzip, brotli] of consumerRows) {
+  const sizes = measurement.consumers[consumerKeys[label.replace(/<\/?code>/g, "")]];
+  assert.ok(sizes, `unknown named-import row ${label}`);
+  assert.deepEqual([gzip, brotli], [kb(sizes.gzip), kb(sizes.brotli)], `${label} sizes must match the measurement`);
+}
+assert.equal(consumerRows.length, Object.keys(consumerKeys).filter(label => measurement.consumers[consumerKeys[label]]).length, "every measured named import must be listed");
 const count = GROUPS.reduce((sum, group) => sum + group.fns.length, 0);
 assert.ok(site.includes(`<span id="api-count">${count}</span>`), "static API count must match documentation inventory");
 const changelog = await read("../CHANGELOG.md");
@@ -134,7 +188,16 @@ for (const [manager, command] of Object.entries({ npm: "npm install", pnpm: "pnp
   assert.ok(script.includes(`${manager}: "${command} ${name}"`), `${manager} install command must match package metadata`);
 }
 assert.ok(script.includes(`await import("./${bundleName}")`), "playground import must match the package-derived bundle name");
-assert.ok(/:focus-visible/.test(style) && /prefers-reduced-motion/.test(style) && /prefers-color-scheme: dark/.test(style), "styles must keep focus, motion and dark-mode handling");
+// Dark mode is declared once with light-dark() under color-scheme: light dark, with data-theme overrides.
+assert.ok(/:focus-visible/.test(style) && /prefers-reduced-motion/.test(style), "styles must keep focus and motion handling");
+assert.ok(/color-scheme:\s*light dark/.test(style) && /light-dark\(/.test(style) && /\[data-theme="dark"\]/.test(style) && /\[data-theme="light"\]/.test(style), "styles must keep OS and explicit light/dark theme handling");
+assert.ok(!/@import|url\(\s*["']?https?:|@font-face/.test(style), "styles must not load external fonts or resources");
+assert.ok(!/\sstyle="/.test(site), "page markup must not use inline style attributes");
+assert.ok(/<meta name="color-scheme" content="light dark">/.test(site), "page must declare both color schemes");
+assert.equal([...site.matchAll(/<meta name="theme-color" media="\(prefers-color-scheme: (?:light|dark)\)" content="#[0-9a-f]{6}">/g)].length, 2, "light and dark theme-color are required");
+const headBeforeStyles = site.slice(0, site.indexOf('<link rel="stylesheet"'));
+assert.ok(/<script>try\{var t=localStorage\.getItem\("fdc-theme"\);[^<]*\}catch\(e\)\{\}<\/script>/.test(headBeforeStyles), "saved theme must be applied before the stylesheet to avoid a flash");
+assert.ok(/class="skip" href="#content"/.test(site) && /<main id="content"/.test(site), "skip link and main landmark are required");
 assert.doesNotMatch(`${script}\n${parser}`, /\b(?:eval|new\s+Function)\b/, "documentation must not dynamically execute editable source text");
 
 const playgroundApi = await import("../dist/index.mjs");

@@ -1,24 +1,123 @@
+# Publish to npm with trusted publishing (OIDC) and provenance.
+#
+# !!! IMPORTANT !!!
+# This workflow no longer uses a long-lived NPM_TOKEN secret. Until the manual
+# prerequisites below are done, publishing from this workflow WILL FAIL (the npm registry will
+# reject the OIDC identity).
+#
+# Manual prerequisites for the maintainer:
+#   npmjs.com
+#     1. Open https://www.npmjs.com/package/@fatdevcon/precisekit/access
+#     2. Under "Trusted Publisher", choose GitHub Actions and enter:
+#          Organization or user : PhanHoangQuocTu
+#          Repository           : precisekit
+#          Workflow filename    : publish.yml
+#          Environment name     : npm
+#     3. Optionally set the package's publishing access to "Require two-factor authentication
+#        and disallow tokens" once trusted publishing works, then revoke the old NPM_TOKEN.
+#   GitHub (repository settings)
+#     1. Settings -> Environments -> New environment named `npm`.
+#     2. Optional but recommended: add yourself as a required reviewer and restrict the
+#        environment to the `master` branch / `v*` tags, so a release cannot publish unattended.
+#     3. Delete the unused NPM_TOKEN repository secret after the first successful trusted publish.
+#
+# Release flow: scripts/release.sh runs the pre-flight checks and prints the tag / release
+# commands. Creating a GitHub release for tag vX.Y.Z triggers this workflow.
 name: Publish
 
 on:
   release:
     types: [published]
 
+# Default to read-only; the job below adds only what trusted publishing needs.
 permissions:
   contents: read
-  id-token: write # npm provenance
+
+# Never publish twice at once, and never cancel a publish that is already running.
+concurrency:
+  group: publish-${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # The maintainer must create this environment (see the prerequisites above). The npm
+    # trusted publisher registration is bound to this environment name.
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # lets npm exchange the GitHub OIDC token for a publish credential and sign provenance
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Full history so the tag can be checked against the default branch.
+          fetch-depth: 0
+          persist-credentials: false
+
+      # The build toolchain (tsup 9) needs Node >= 22.18; trusted publishing needs Node >= 22.14.
+      # "22" resolves to the newest 22.x, which satisfies both. No package cache is used in the
+      # publishing job, so a poisoned cache cannot influence the released artifact.
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-          cache: npm
-      - run: npm ci
-      - run: npm publish --provenance --access public
+
+      # Trusted publishing requires npm CLI >= 11.5.1. The runner image ships an older npm, so
+      # install an exact, pinned release instead of a floating range.
+      # npm 11.21.1 supports Node ^20.17 || >=22.9. Bump deliberately; do not use `latest`.
+      - name: Install a pinned npm CLI that supports trusted publishing
+        run: |
+          npm install --global npm@11.21.1
+          npm --version
+          node --version
+
+      - name: Release tag must match package.json and the default branch
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          IS_PRERELEASE: ${{ github.event.release.prerelease }}
+        run: |
+          set -euo pipefail
+          version=$(node -p "require('./package.json').version")
+          name=$(node -p "require('./package.json').name")
+          if [ "$RELEASE_TAG" != "v$version" ]; then
+            echo "Release tag '$RELEASE_TAG' does not match package.json version 'v$version'." >&2
+            exit 1
+          fi
+          if [ "$IS_PRERELEASE" = "true" ]; then
+            echo "Refusing to publish a GitHub pre-release to the default npm dist-tag." >&2
+            exit 1
+          fi
+          git fetch --no-tags origin master
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/master; then
+            echo "Tagged commit $GITHUB_SHA is not reachable from master." >&2
+            exit 1
+          fi
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "$name@$version is already published." >&2
+            exit 1
+          fi
+          echo "Publishing $name@$version from $GITHUB_SHA"
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.5
+
+      # Same gate as `prepublishOnly`, plus the Bun and tarball consumer checks.
+      - run: npm ci
+      - run: npm run check
+      - run: npm run docs:sync
+      - name: Generated documentation must already be synchronized
+        run: git diff --exit-code -- docs README.md .github/repository-metadata.json
+      - run: npm run test:package
+      - run: npm run test:docs
+      - run: npm run test:site
+      - run: npm run test:bun
+      - run: npm run test:tarball
+      - run: npm audit --audit-level=low --omit=dev
+
+      # No NODE_AUTH_TOKEN / NPM_TOKEN: npm authenticates through OIDC and attaches a signed
+      # provenance attestation. --ignore-scripts because the gate above already ran the same
+      # checks and build; this avoids running prepublishOnly a second time.
+      - name: Publish with provenance
+        run: npm publish --provenance --access public --ignore-scripts

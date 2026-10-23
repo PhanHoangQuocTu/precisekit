@@ -1,39 +1,39 @@
 {
   "name": "@fatdevcon/precisekit",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "node": "v22.22.3",
-  "esbuild": "0.27.2",
+  "esbuild": "0.28.2",
   "schemaVersion": 1,
   "entry": "dist/index.mjs",
-  "esmSha256": "73ef1579bf108698f7fdfdbb9a149bca13ad4bdbbb74865dcd0a64b464d063b0",
-  "exportCount": 221,
+  "esmSha256": "8ecd0bdcdc54f9fd3f483f335d932adab8f079c07938277a08e2e3a7660fd761",
+  "exportCount": 224,
   "artifacts": {
     "index.mjs": {
-      "raw": 163698,
-      "gzip": 40965,
-      "brotli": 34113
+      "raw": 164773,
+      "gzip": 41211,
+      "brotli": 34353
     },
     "index.js": {
-      "raw": 168377,
-      "gzip": 41628,
-      "brotli": 34806
+      "raw": 169514,
+      "gzip": 41884,
+      "brotli": 34945
     },
     "index.d.ts": {
-      "raw": 69665,
-      "gzip": 19612,
-      "brotli": 16768
+      "raw": 71137,
+      "gzip": 20085,
+      "brotli": 17203
     },
     "index.d.mts": {
-      "raw": 69665,
-      "gzip": 19612,
-      "brotli": 16768
+      "raw": 71137,
+      "gzip": 20085,
+      "brotli": 17203
     }
   },
   "consumers": {
     "full": {
-      "raw": 86535,
-      "gzip": 29801,
-      "brotli": 26171
+      "raw": 87111,
+      "gzip": 29953,
+      "brotli": 26378
     },
     "toNumber": {
       "raw": 1746,
@@ -108,7 +108,7 @@
     "money": {
       "raw": 14383,
       "gzip": 6137,
-      "brotli": 5259
+      "brotli": 5258
     },
     "locale": {
       "raw": 14182,
@@ -134,6 +134,21 @@
       "raw": 3997,
       "gzip": 1728,
       "brotli": 1546
+    },
+    "compactNullish": {
+      "raw": 1377,
+      "gzip": 810,
+      "brotli": 717
+    },
+    "hasByPath": {
+      "raw": 1434,
+      "gzip": 831,
+      "brotli": 749
+    },
+    "pickBy": {
+      "raw": 1738,
+      "gzip": 965,
+      "brotli": 848
     }
   }
 }

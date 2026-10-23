@@ -33,6 +33,9 @@ const fixtures = {
   concurrency: ["mapConcurrent", "mapSettledConcurrent", "batchAsync"],
   businessCalendar: ["isBusinessDay", "addBusinessDays", "differenceInBusinessDays", "nextBusinessDay"],
   security: ["isSafeRedirectUrl", "getSafeRedirectTarget", "redactSensitiveFields", "sanitizeUrlForLogging"],
+  compactNullish: ["compactNullish"],
+  hasByPath: ["hasByPath"],
+  pickBy: ["pickBy"],
 };
 const sizes = bytes => ({ raw: bytes.length, gzip: gzipSync(bytes, { level: 9 }).length, brotli: brotliCompressSync(bytes).length });
 const manifest = JSON.parse(await readFile(new URL("../package.json", import.meta.url), "utf8"));

@@ -2,6 +2,36 @@
 
 All notable changes to `@fatdevcon/precisekit`. The project follows [semantic versioning](https://semver.org/).
 
+## 0.5.1
+
+### Added
+
+- `compactNullish` removes only `null` and `undefined` from an array and keeps `0`, `false`, `""`, `NaN` and `0n`. It accepts readonly arrays, returns a new array and narrows the element type with `NonNullable`.
+- `hasByPath` reports whether a nested path is made of own properties, so properties whose value is `undefined` count and inherited ones do not. It uses the `getByPath` path syntax, never runs getters and returns `false` for array holes, primitives and empty paths.
+- `pickBy` copies the own enumerable string and symbol properties accepted by a predicate into a new object with plain data properties. A type-guard predicate narrows the result type, and an own `__proto__` key is copied as data without changing any prototype.
+- Contributor documentation: `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, issue and pull request templates and `CODEOWNERS`.
+
+### Changed
+
+- `getByPath`, `setByPath` and `hasByPath` accept readonly array paths. The change only widens the accepted parameter type.
+- Added tests for `withTimeout` timer cleanup, late-rejection handling, error messages and argument validation, and documented its 2147483647 ms timer limit. Its behavior is unchanged.
+- Rebuilt the documentation site with a documentation-style layout, compact searchable API cards, copyable code blocks, an accessible mobile sidebar and consistent light and dark themes. The themes use `light-dark()`, which needs a browser from 2024 or later.
+- Replaced the bundle-size chart with horizontal bars on one gzip scale that separate historical fixtures from the current measurement, and added the new helpers to the measured consumer fixtures.
+- Redesigned the README with badges, a contents list, a compatibility table and security notes.
+- Updated development dependencies to their latest stable releases, including `tsup` 9, `eslint` 10.13, `@typescript-eslint` 8.72, `rollup` 4.65 and `ts-jest` 29.4.15, and removed the unused `eslint-config-prettier`. Rebuilding the unchanged 0.5.0 sources with the new toolchain produced byte-identical `dist` files.
+- Building the repository now needs Node.js 22.18 or newer because `tsup` 9 requires it. The published package still supports Node.js 18 and newer.
+- `scripts/release.sh` no longer pushes or publishes. It runs the pre-release checks and prints the tag and release commands.
+
+### Security
+
+- GitHub Actions are pinned to full commit SHAs at their latest major versions, and CI has concurrency groups, `persist-credentials: false` and a Node 18, 20, 22 and 24 compatibility matrix.
+- The publish workflow uses npm trusted publishing (OIDC) with provenance instead of a long-lived token. It needs the npm trusted publisher and a GitHub `npm` environment to be configured before the next release.
+- Added CodeQL and dependency-review workflows and grouped Dependabot updates.
+
+### Compatibility
+
+- No existing function, signature, runtime result, error code or export path changed. The package still has zero runtime dependencies, readable unminified output and side-effect-free named exports.
+
 ## 0.5.0
 
 ### Added

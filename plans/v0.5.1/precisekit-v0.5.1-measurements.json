@@ -1,0 +1,301 @@
+{
+  "methodology": "scripts/measure-bundle.mjs: esbuild browser IIFE, ES2020, minify + tree-shaking, gzip level 9, Brotli (node zlib defaults), Node v22.22.3. before = tsup 8.5.1 build of 0.5.0 sources measured with esbuild 0.27.2 (identical to published 0.5.0 dist, byte for byte). after = 0.5.1 build (tsup 9.0.0, esbuild 0.28.2). Measuring the 0.5.0 dist with esbuild 0.28.2 gave identical numbers, so deltas come from code only.",
+  "before": {
+    "name": "@fatdevcon/precisekit",
+    "version": "0.5.0",
+    "node": "v22.22.3",
+    "esbuild": "0.27.2",
+    "schemaVersion": 1,
+    "entry": "dist/index.mjs",
+    "esmSha256": "73ef1579bf108698f7fdfdbb9a149bca13ad4bdbbb74865dcd0a64b464d063b0",
+    "exportCount": 221,
+    "artifacts": {
+      "index.mjs": {
+        "raw": 163698,
+        "gzip": 40965,
+        "brotli": 34113
+      },
+      "index.js": {
+        "raw": 168377,
+        "gzip": 41628,
+        "brotli": 34806
+      },
+      "index.d.ts": {
+        "raw": 69665,
+        "gzip": 19612,
+        "brotli": 16768
+      },
+      "index.d.mts": {
+        "raw": 69665,
+        "gzip": 19612,
+        "brotli": 16768
+      }
+    },
+    "consumers": {
+      "full": {
+        "raw": 86535,
+        "gzip": 29801,
+        "brotli": 26171
+      },
+      "toNumber": {
+        "raw": 1746,
+        "gzip": 877,
+        "brotli": 760
+      },
+      "normalizeWhitespace": {
+        "raw": 1123,
+        "gzip": 673,
+        "brotli": 589
+      },
+      "capitalize": {
+        "raw": 1268,
+        "gzip": 758,
+        "brotli": 670
+      },
+      "legacyMixed": {
+        "raw": 2135,
+        "gzip": 1072,
+        "brotli": 931
+      },
+      "strip": {
+        "raw": 1449,
+        "gzip": 849,
+        "brotli": 757
+      },
+      "title": {
+        "raw": 1253,
+        "gzip": 755,
+        "brotli": 656
+      },
+      "firstChar": {
+        "raw": 1483,
+        "gzip": 859,
+        "brotli": 768
+      },
+      "lastChar": {
+        "raw": 1482,
+        "gzip": 858,
+        "brotli": 765
+      },
+      "safeToNumber": {
+        "raw": 1510,
+        "gzip": 805,
+        "brotli": 718
+      },
+      "safeToInteger": {
+        "raw": 1721,
+        "gzip": 866,
+        "brotli": 778
+      },
+      "safeToBigInt": {
+        "raw": 1185,
+        "gzip": 671,
+        "brotli": 597
+      },
+      "safeToBoolean": {
+        "raw": 1131,
+        "gzip": 663,
+        "brotli": 602
+      },
+      "safeToString": {
+        "raw": 1842,
+        "gzip": 970,
+        "brotli": 858
+      },
+      "cleaningMixed": {
+        "raw": 2570,
+        "gzip": 1316,
+        "brotli": 1194
+      },
+      "money": {
+        "raw": 14383,
+        "gzip": 6137,
+        "brotli": 5259
+      },
+      "locale": {
+        "raw": 14182,
+        "gzip": 6092,
+        "brotli": 5243
+      },
+      "normalization": {
+        "raw": 4551,
+        "gzip": 1765,
+        "brotli": 1596
+      },
+      "concurrency": {
+        "raw": 2351,
+        "gzip": 1174,
+        "brotli": 1049
+      },
+      "businessCalendar": {
+        "raw": 2813,
+        "gzip": 1460,
+        "brotli": 1304
+      },
+      "security": {
+        "raw": 3997,
+        "gzip": 1728,
+        "brotli": 1546
+      }
+    }
+  },
+  "after": {
+    "name": "@fatdevcon/precisekit",
+    "version": "0.5.1",
+    "node": "v22.22.3",
+    "esbuild": "0.28.2",
+    "schemaVersion": 1,
+    "entry": "dist/index.mjs",
+    "esmSha256": "8ecd0bdcdc54f9fd3f483f335d932adab8f079c07938277a08e2e3a7660fd761",
+    "exportCount": 224,
+    "artifacts": {
+      "index.mjs": {
+        "raw": 164773,
+        "gzip": 41211,
+        "brotli": 34353
+      },
+      "index.js": {
+        "raw": 169514,
+        "gzip": 41884,
+        "brotli": 34945
+      },
+      "index.d.ts": {
+        "raw": 71137,
+        "gzip": 20085,
+        "brotli": 17203
+      },
+      "index.d.mts": {
+        "raw": 71137,
+        "gzip": 20085,
+        "brotli": 17203
+      }
+    },
+    "consumers": {
+      "full": {
+        "raw": 87111,
+        "gzip": 29953,
+        "brotli": 26378
+      },
+      "toNumber": {
+        "raw": 1746,
+        "gzip": 877,
+        "brotli": 760
+      },
+      "normalizeWhitespace": {
+        "raw": 1123,
+        "gzip": 673,
+        "brotli": 589
+      },
+      "capitalize": {
+        "raw": 1268,
+        "gzip": 758,
+        "brotli": 670
+      },
+      "legacyMixed": {
+        "raw": 2135,
+        "gzip": 1072,
+        "brotli": 931
+      },
+      "strip": {
+        "raw": 1449,
+        "gzip": 849,
+        "brotli": 757
+      },
+      "title": {
+        "raw": 1253,
+        "gzip": 755,
+        "brotli": 656
+      },
+      "firstChar": {
+        "raw": 1483,
+        "gzip": 859,
+        "brotli": 768
+      },
+      "lastChar": {
+        "raw": 1482,
+        "gzip": 858,
+        "brotli": 765
+      },
+      "safeToNumber": {
+        "raw": 1510,
+        "gzip": 805,
+        "brotli": 718
+      },
+      "safeToInteger": {
+        "raw": 1721,
+        "gzip": 866,
+        "brotli": 778
+      },
+      "safeToBigInt": {
+        "raw": 1185,
+        "gzip": 671,
+        "brotli": 597
+      },
+      "safeToBoolean": {
+        "raw": 1131,
+        "gzip": 663,
+        "brotli": 602
+      },
+      "safeToString": {
+        "raw": 1842,
+        "gzip": 970,
+        "brotli": 858
+      },
+      "cleaningMixed": {
+        "raw": 2570,
+        "gzip": 1316,
+        "brotli": 1194
+      },
+      "money": {
+        "raw": 14383,
+        "gzip": 6137,
+        "brotli": 5258
+      },
+      "locale": {
+        "raw": 14182,
+        "gzip": 6092,
+        "brotli": 5243
+      },
+      "normalization": {
+        "raw": 4551,
+        "gzip": 1765,
+        "brotli": 1596
+      },
+      "concurrency": {
+        "raw": 2351,
+        "gzip": 1174,
+        "brotli": 1049
+      },
+      "businessCalendar": {
+        "raw": 2813,
+        "gzip": 1460,
+        "brotli": 1304
+      },
+      "security": {
+        "raw": 3997,
+        "gzip": 1728,
+        "brotli": 1546
+      },
+      "compactNullish": {
+        "raw": 1377,
+        "gzip": 810,
+        "brotli": 717
+      },
+      "hasByPath": {
+        "raw": 1434,
+        "gzip": 831,
+        "brotli": 749
+      },
+      "pickBy": {
+        "raw": 1738,
+        "gzip": 965,
+        "brotli": 848
+      }
+    }
+  },
+  "deltas": {
+    "fullMinified": 576,
+    "fullGzip": 152,
+    "fullBrotli": 207
+  }
+}

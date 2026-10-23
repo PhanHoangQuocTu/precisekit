@@ -103,6 +103,10 @@ for (const api of [esm, cjs]) {
   assert.equal(api.getSafeRedirectTarget("https://evil.example", { fallback: "/" }), "/");
   assert.deepEqual(api.redactSensitiveFields({ password: "secret" }, { keys: ["password"] }), { password: "[REDACTED]" });
   assert.equal(api.sanitizeUrlForLogging("https://example.com/?token=secret"), "https://example.com/?token=%5BREDACTED%5D");
+  assert.deepEqual(api.compactNullish([0, null, "", undefined, false, 1]), [0, "", false, 1]);
+  assert.equal(api.hasByPath({ a: { b: undefined } }, "a.b"), true);
+  assert.equal(api.hasByPath({}, "toString"), false);
+  assert.deepEqual(api.pickBy({ a: 1, b: 2 }, value => value > 1), { b: 2 });
 }
 assert.deepEqual(Object.keys(esm).filter(key => key !== "default").sort(), Object.keys(cjs).sort());
 console.log(`Package exports verified (ESM + CommonJS) on ${globalThis.Bun ? "Bun " + Bun.version : "Node " + process.version}.`);

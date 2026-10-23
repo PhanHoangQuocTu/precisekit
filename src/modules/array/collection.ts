@@ -11,6 +11,12 @@ const compact = <T>(arr: T[]): Exclude<T, Falsy>[] => {
   return arr.filter(Boolean) as Exclude<T, Falsy>[];
 };
 
+/** Drops only null and undefined; keeps 0, false, "", NaN and 0n. Returns a new array in the original order. */
+const compactNullish = <T>(arr: readonly T[]): NonNullable<T>[] => {
+  assertArray(arr, "arr");
+  return arr.filter((item) => item !== null && item !== undefined) as NonNullable<T>[];
+};
+
 /** Items of `arr` that are not in `values`. Compares with SameValueZero. */
 const difference = <T>(arr: T[], values: T[]): T[] => {
   assertArray(arr, "arr");
@@ -144,6 +150,7 @@ const flattenDeep = (arr: unknown[], depth = Infinity): unknown[] => {
 
 export {
   compact,
+  compactNullish,
   difference,
   intersection,
   union,

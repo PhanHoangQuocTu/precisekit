@@ -8,7 +8,7 @@ export const PLAYGROUND_FUNCTIONS = new Set([
   "formatDate", "addMonths", "differenceInCalendarDays", "getTimeZoneOffset", "parseDuration", "formatDuration",
   "strip", "lstrip", "rstrip", "title", "firstChar", "lastChar", "normalizeWhitespace",
   "safeToNumber", "safeToInteger", "safeToBigInt", "safeToBoolean", "safeToString",
-  "slugify", "truncateText", "maskString", "camelCase", "escapeRegExp", "setByPath", "parseBytes",
+  "slugify", "truncateText", "maskString", "camelCase", "escapeRegExp", "setByPath", "hasByPath", "compactNullish", "parseBytes",
   "toMinorUnits", "fromMinorUnits", "allocateMoney", "calculateTax", "applyDiscount",
   "parseLocalizedNumber", "parseLocalizedCurrency", "parseLocalizedPercent",
   "isBusinessDay", "addBusinessDays", "differenceInBusinessDays", "nextBusinessDay",

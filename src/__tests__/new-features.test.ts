@@ -481,7 +481,58 @@ describe("function utilities", () => {
     await assertion;
     await expect(withTimeout(Promise.resolve("fast"), 100)).resolves.toBe("fast");
     await expect(withTimeout(Promise.reject(new Error("x")), 100)).rejects.toThrow("x");
-    expect(jest.getTimerCount()).toBeGreaterThanOrEqual(0);
+    expect(jest.getTimerCount()).toBe(1);
+    jest.clearAllTimers();
+  });
+  test("withTimeout clears its timer when the promise settles first", async () => {
+    await expect(withTimeout(Promise.resolve("fast"), 100)).resolves.toBe("fast");
+    expect(jest.getTimerCount()).toBe(0);
+    await expect(withTimeout(Promise.reject(new Error("x")), 100)).rejects.toThrow("x");
+    expect(jest.getTimerCount()).toBe(0);
+    const resolvesLater = withTimeout(new Promise<string>((resolve) => setTimeout(() => resolve("ok"), 50)), 100);
+    await jest.advanceTimersByTimeAsync(50);
+    await expect(resolvesLater).resolves.toBe("ok");
+    expect(jest.getTimerCount()).toBe(0);
+  });
+  test("withTimeout error message, name and zero delay", async () => {
+    const never = new Promise<never>(() => undefined);
+    const defaultMessage = withTimeout(never, 25);
+    const custom = withTimeout(never, 25, "slow request");
+    const assertions = Promise.all([
+      expect(defaultMessage).rejects.toMatchObject({ name: "TimeoutError", message: "Timed out after 25ms" }),
+      expect(custom).rejects.toMatchObject({ name: "TimeoutError", message: "slow request" }),
+    ]);
+    await jest.advanceTimersByTimeAsync(25);
+    await assertions;
+    expect(jest.getTimerCount()).toBe(0);
+    const zero = expect(withTimeout(never, 0)).rejects.toMatchObject({ name: "TimeoutError" });
+    await jest.advanceTimersByTimeAsync(0);
+    await zero;
+  });
+  test("withTimeout ignores a late rejection after the timeout and accepts thenables", async () => {
+    let rejectLate: (reason: Error) => void = () => undefined;
+    const late = new Promise<never>((_resolve, reject) => { rejectLate = reject; });
+    const timedOut = expect(withTimeout(late, 10)).rejects.toMatchObject({ name: "TimeoutError" });
+    await jest.advanceTimersByTimeAsync(10);
+    await timedOut;
+    const unhandled = jest.fn();
+    process.once("unhandledRejection", unhandled);
+    rejectLate(new Error("late failure"));
+    await jest.advanceTimersByTimeAsync(0);
+    await Promise.resolve();
+    process.off("unhandledRejection", unhandled);
+    expect(unhandled).not.toHaveBeenCalled();
+    const thenable = { then: (resolve: (value: string) => void) => resolve("thenable") };
+    await expect(withTimeout(thenable, 10)).resolves.toBe("thenable");
+    expect(jest.getTimerCount()).toBe(0);
+  });
+  test("withTimeout validates ms synchronously", () => {
+    const pending = Promise.resolve(1);
+    expect(() => withTimeout(pending, -1)).toThrow(RangeError);
+    expect(() => withTimeout(pending, NaN)).toThrow();
+    expect(() => withTimeout(pending, Infinity)).toThrow();
+    expect(() => withTimeout(pending, "10" as never)).toThrow();
+    expect(jest.getTimerCount()).toBe(0);
   });
   test("argument validation", () => {
     expect(() => debounce(null as any, 10)).toThrow(TypeError);

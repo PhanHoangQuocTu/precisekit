@@ -188,7 +188,23 @@ addBusinessDays(new Date(), 1);
 batchAsync([1], batch => batch.push(2), {batchSize:1});
 void [parts,tax,discounted,localized,userProof,mapped,settled,batches,business,daysOut,countOut,safe,target,sanitized,originalSecret];
 `;
-for (const ext of ["mts", "cts"]) writeFileSync(join(consumer, "consumer." + ext), fixture + v050Fixture);
+const v051Fixture = `
+import { compactNullish, hasByPath, pickBy, getByPath } from ${packageSpecifier};
+const compacted: number[] = compactNullish([1, null, undefined, 0] as readonly (number | null | undefined)[]);
+const keptFalsy: (0 | "" | false)[] = compactNullish([0, "", false, null] as const);
+const present: boolean = hasByPath({ a: { b: undefined } }, ["a", "b"] as const);
+const readonlyPath: boolean = hasByPath({}, "a.b[0]") && getByPath({}, ["a"] as readonly string[]) === undefined;
+const picked: Partial<{ a: number; b: string }> = pickBy({ a: 1, b: "x" }, (value, key) => typeof value === "number" && key === "a");
+const narrowedPick: Partial<Record<"a" | "b", string>> = pickBy({ a: 1, b: "x" }, (value): value is string => typeof value === "string");
+// @ts-expect-error null is removed from the element type
+const stillNullable: null[] = compactNullish([1, null] as (number | null)[]);
+// @ts-expect-error the predicate must be a function
+pickBy({ a: 1 }, "a");
+// @ts-expect-error the path must be a string or an array
+hasByPath({}, 5);
+void [compacted, keptFalsy, present, readonlyPath, picked, narrowedPick, stillNullable];
+`;
+for (const ext of ["mts", "cts"]) writeFileSync(join(consumer, "consumer." + ext), fixture + v050Fixture + v051Fixture);
 console.log(run(process.execPath, [join(root, "node_modules/typescript-native/bin/tsc"),
   "--noEmit", "--strict", "--module", "NodeNext", "--moduleResolution", "NodeNext",
   "--target", "ES2020", "--skipLibCheck", "false", "consumer.mts", "consumer.cts"], consumer));

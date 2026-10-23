@@ -2,25 +2,43 @@
 
 <!-- package-metadata:tagline -->Exact, Safe &amp; Reliable TypeScript Utilities<!-- /package-metadata:tagline -->
 
+<p>
+  <a href="https://www.npmjs.com/package/@fatdevcon/precisekit"><img alt="npm version" src="https://img.shields.io/npm/v/@fatdevcon/precisekit?color=0b5fff&label=npm"></a>
+  <a href="https://github.com/PhanHoangQuocTu/precisekit/actions/workflows/ci.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/PhanHoangQuocTu/precisekit/ci.yml?branch=master&label=CI"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/npm/l/@fatdevcon/precisekit?color=2da44e"></a>
+  <img alt="Zero runtime dependencies" src="https://img.shields.io/badge/runtime%20dependencies-0-2da44e">
+  <img alt="Node.js 18 or newer" src="https://img.shields.io/badge/node-%E2%89%A518-5fa04e">
+  <img alt="TypeScript declarations included" src="https://img.shields.io/badge/types-included-3178c6">
+</p>
+
 <!-- package-metadata:description -->Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.<!-- /package-metadata:description -->
 
-Zero runtime dependencies, named exports, ESM/CommonJS and bundled declarations.
+- **Exact by default**: decimal and BigInt arithmetic, minor-unit money, strict locale parsing.
+- **Safe at the boundary**: normalize untrusted records, redact logs, validate redirects, copy objects without prototype pollution.
+- **Small and auditable**: no runtime dependencies, named exports, `sideEffects: false`, readable unminified ESM/CommonJS and bundled `.d.ts`/`.d.mts`.
 
 [Documentation](https://phanhoangquoctu.github.io/precisekit/) ·
 [API reference](https://phanhoangquoctu.github.io/precisekit/#api) ·
 [Playground](https://phanhoangquoctu.github.io/precisekit/#playground) ·
 [Changelog](CHANGELOG.md)
 
+## Contents
+
+[Install](#install) · [Quick start](#quick-start) · [Workflows](#workflows) · [New in 0.5.1](#new-in-051) ·
+[Examples](#money-without-hidden-rounding) · [Compatibility](#compatibility) · [Bundle size](#bundle-size-and-tree-shaking) ·
+[Security](#security) · [Migration](#migration) · [Contributing](#contributing-and-license)
+
 ## Install
 
 ```sh
 npm install @fatdevcon/precisekit
+# pnpm add @fatdevcon/precisekit · yarn add @fatdevcon/precisekit · bun add @fatdevcon/precisekit
 ```
 
-Also supports pnpm, Yarn and Bun. Requires Node.js 18+, Bun, or a modern
-browser through a bundler. Locale behavior follows the runtime's ICU/Intl data.
+Requires Node.js 18+, Bun, or a modern browser through a bundler. Locale behavior
+follows the runtime's ICU/Intl data.
 
-## Start with exact values
+## Quick start
 
 ```ts
 import { summary, round, formatCurrency, allocateMoney } from "@fatdevcon/precisekit";
@@ -38,6 +56,8 @@ Existing numeric helpers preserve their documented number/bigint/string result
 kinds and throw typed errors rather than silently overflowing or underflowing.
 No function can recover precision already lost before receiving a number.
 
+Try it without installing: [open the playground](https://phanhoangquoctu.github.io/precisekit/#playground).
+
 <a id="api-index"></a>
 
 ## Workflows
@@ -47,13 +67,35 @@ No function can recover precision already lost before receiving a number.
 | Exact money | `toMinorUnits`, `fromMinorUnits`, `allocateMoney`, `calculateTax`, `applyDiscount` |
 | External data | `normalizeRecord`, `normalizeArray`, nullable `safeTo*` converters |
 | Locale parsing | `parseLocalizedNumber`, `parseLocalizedCurrency`, `parseLocalizedPercent` |
-| Bounded async work | `mapConcurrent`, `mapSettledConcurrent`, `batchAsync` |
+| Bounded async work | `mapConcurrent`, `mapSettledConcurrent`, `batchAsync`, `withTimeout` |
 | Business calendars | `isBusinessDay`, `addBusinessDays`, `differenceInBusinessDays`, `nextBusinessDay` |
 | Safer URLs and logs | `isSafeRedirectUrl`, `getSafeRedirectTarget`, `redactSensitiveFields`, `sanitizeUrlForLogging` |
-| Existing utilities | Exact arithmetic, date/timezone formatting, Unicode text, immutable collections, object paths, retry, debounce and validators |
+| Collections and objects | `compactNullish`, `pickBy`, `pick`, `omit`, `getByPath`, `hasByPath`, `setByPath`, `deepMerge` |
+| Existing utilities | Exact arithmetic, date/timezone formatting, Unicode text, immutable collections, retry, debounce and validators |
 
 The [API reference](https://phanhoangquoctu.github.io/precisekit/#api) documents
 each signature, default, return kind, error and example.
+
+## New in 0.5.1
+
+```ts
+import { compactNullish, hasByPath, getByPath, pickBy } from "@fatdevcon/precisekit";
+
+compactNullish([0, null, "", undefined, false, 1]); // [0, "", false, 1]
+
+const data = { a: { b: undefined, list: [{ id: 1 }] } };
+hasByPath(data, "a.b"); // true  (own property, value is undefined)
+getByPath(data, "a.b"); // undefined
+hasByPath(data, "a.list[0].id"); // true
+hasByPath({}, "toString"); // false (inherited, not own)
+
+pickBy({ id: 7, note: null, flag: false }, (value) => value !== null);
+// { id: 7, flag: false }
+```
+
+- `compactNullish` removes only `null` and `undefined`; `0`, `false`, `""`, `NaN` and `0n` stay.
+- `hasByPath` checks own properties only, never runs getters and returns `false` for array holes and primitives.
+- `pickBy` keeps own enumerable string and symbol keys the predicate accepts and writes plain data properties, so an own `__proto__` key cannot pollute prototypes.
 
 ## Money without hidden rounding
 
@@ -137,24 +179,44 @@ Business calendars accept strict Gregorian `YYYY-MM-DD` strings, years
 Redirect validation is not SSRF protection. Redaction supports plain objects,
 arrays, cycles and cloned Dates; unsupported structures/accessors reject.
 
-## Modules, types and performance
+## CommonJS
 
 ```js
 const { summary } = require("@fatdevcon/precisekit");
 ```
 
-Strict NodeNext `.mts` and `.cts` consumer fixtures check inference, options and
-negative type cases against the installed tarball. Existing root and
-`dist/*` exports are retained. Runtime detection is import-safe for SSR.
+## Compatibility
+
+| Area | Support |
+| --- | --- |
+| Runtimes | Node.js 18+, Bun, modern browsers through a bundler, SSR-safe at import time |
+| Module formats | ESM (`import`) and CommonJS (`require`), each with matching TypeScript declarations |
+| TypeScript | Bundled `.d.ts` / `.d.mts`, checked with strict NodeNext `.mts` and `.cts` consumers |
+| Dependencies | None at runtime. `decimal.js` and `date-fns` are dev-only test oracles |
+| Tree-shaking | `sideEffects: false`, named exports, no import-time work |
+| Package paths | The root export and `dist/*` are retained |
+
+Building this repository needs Node.js 22.18+ because of its toolchain; using the
+published package does not.
+
+## Bundle size and tree-shaking
 
 Distribution JS intentionally stays readable and unminified. Consumer bundlers
-can remove unused named exports. Current raw/minified/gzip/Brotli and subsystem
-measurements are generated by `npm run test:bundle`; see
-[measured data](docs/bundle-data.json) and the release verification report.
+can remove unused named exports. Current raw, minified, gzip and Brotli figures
+for the full bundle and for selected imports are generated by `npm run test:bundle`;
+see the [measured data](docs/bundle-data.json) and the
+[bundle comparison](https://phanhoangquoctu.github.io/precisekit/#size) in the docs.
 A larger full-root bundle reflects added functions; selected imports are measured
-independently. There are no runtime dependencies.
+independently.
 
-## Migration and support
+## Security
+
+- Zero runtime dependencies and no install-time scripts.
+- `setByPath` and `deepMerge` refuse `__proto__`, `constructor` and `prototype` keys. `pick`, `omit`, `pickBy` and `hasByPath` treat an own `__proto__` key as plain data and never change a prototype. `hasByPath` never runs getters; `getByPath` and `pickBy` read values, so own getters run.
+- `isSafeRedirectUrl` is not SSRF protection; redaction rejects unsupported structures instead of guessing.
+- Report vulnerabilities privately using [SECURITY.md](SECURITY.md).
+
+## Migration
 
 For `@fatdevcon/utilities@0.4.2 → @fatdevcon/precisekit@0.5.0`, replace the
 installation and import name. Existing function contracts remain supported.
@@ -168,7 +230,10 @@ See the [migration guide](docs/migration-from-utilities.md). Old changelog entri
 retain their historical identity. Publication/deprecation are manual maintainer
 actions and are not performed by local verification.
 
-Report bugs through [Issues](https://github.com/PhanHoangQuocTu/precisekit/issues).
-Report vulnerabilities privately using [SECURITY.md](SECURITY.md).
+## Contributing and license
+
+Report bugs and ideas through [Issues](https://github.com/PhanHoangQuocTu/precisekit/issues);
+please open an issue before sending a pull request. See [CONTRIBUTING.md](CONTRIBUTING.md)
+for the development workflow.
+
 MIT license; [third-party notices](THIRD_PARTY_NOTICES.md) preserve data credits.
-Maintained by the package owner; external contributions are not accepted.

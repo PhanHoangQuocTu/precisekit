@@ -714,6 +714,11 @@ findMax(users, (a, b) => a.id - b.id).name; // "Chi"` },
         desc: "Drops false, null, undefined, 0, \"\", NaN and 0n.",
         params: [p("arr", "T[]", "The array.")], returns: "T[] without falsy items.", throws: [e("TypeError", "", "arr is not an array")],
         ex: `compact([0, 1, false, 2, "", 3, null, NaN]); // [1, 2, 3]` },
+      { name: "compactNullish", sig: "compactNullish<T>(arr: readonly T[]): NonNullable<T>[]",
+        desc: "Drops only null and undefined, so 0, false, \"\", NaN and 0n stay. Returns a new array in the original order and never changes arr.",
+        params: [p("arr", "readonly T[]", "The array. A frozen or readonly array is fine.")], returns: "NonNullable<T>[].", throws: [e("TypeError", "", "arr is not an array")],
+        ex: `compactNullish([0, null, "", undefined, false, 1]); // [0, "", false, 1]
+compact([0, null, "", undefined, false, 1]);        // [1]` },
       { name: "difference", sig: "difference<T>(arr: T[], values: T[]): T[]",
         desc: "Items of arr that are not in values.",
         params: [p("arr", "T[]", "Items to keep from."), p("values", "T[]", "Items to remove.")], returns: "T[].", throws: [e("TypeError", "", "an argument is not an array")],
@@ -856,6 +861,13 @@ deepEqual([1, 2], { 0: 1, 1: 2 });                     // false` },
         desc: "Copy of obj with only the listed own keys.",
         params: [p("obj", "T", "Source object."), p("keys", "K[]", "Keys to keep.")], returns: "Pick<T, K>.", throws: [e("TypeError", "", "obj is not an object or keys is not an array")],
         ex: `pick({ id: 1, name: "An", role: "dev" }, ["id", "name"]); // { id: 1, name: "An" }` },
+      { name: "pickBy", sig: "pickBy<T extends object>(obj: T, predicate: (value: T[keyof T], key: string | symbol, obj: T) => unknown): Partial<T>",
+        desc: "Copy of obj with the own enumerable string and symbol properties for which the predicate is truthy. Keys follow Reflect.ownKeys order, so integer-like keys come first. Values are read the way Object.entries reads them, so own getters run once; the copy holds plain data properties. A type-guard predicate, declared or inferred by TypeScript 5.5 and later, narrows each property to T[K] & S.",
+        params: [p("obj", "T extends object", "Source object. It is never mutated."), p("predicate", "(value, key, obj) => unknown", "Return a truthy value to keep the property. The key is a string or a symbol.")], returns: "A new Partial<T> with a plain prototype.",
+        throws: [e("TypeError", "", "obj is not an object or predicate is not a function")],
+        ex: `pickBy({ a: 1, b: 2, c: 3 }, (value) => value > 1);          // { b: 2, c: 3 }
+pickBy({ id: 7, note: null, flag: false }, (value) => value !== null); // { id: 7, flag: false }
+pickBy({ id: 7, name: "An" }, (_value, key) => key === "name");  // { name: "An" }` },
       { name: "omit", sig: "omit<T extends object, K extends keyof T>(obj: T, keys: K[]): Omit<T, K>",
         desc: "Copy of obj without the listed keys.",
         params: [p("obj", "T", "Source object."), p("keys", "K[]", "Keys to drop.")], returns: "Omit<T, K>.", throws: [e("TypeError", "", "obj is not an object or keys is not an array")],
@@ -864,15 +876,24 @@ deepEqual([1, 2], { 0: 1, 1: 2 });                     // false` },
         desc: "Same keys, transformed values.",
         params: [p("obj", "Record<string, T>", "Source object."), p("fn", "(value, key) => R", "Returns the new value.")], returns: "Record<string, R>.", throws: [e("TypeError", "", "obj is not an object or fn is not a function")],
         ex: `mapValues({ a: 1, b: 2 }, (v) => v * 2); // { a: 2, b: 4 }` },
-      { name: "getByPath", sig: "getByPath(obj: unknown, path: string | (string | number)[], defaultValue?: unknown): unknown",
+      { name: "getByPath", sig: "getByPath(obj: unknown, path: string | readonly (string | number)[], defaultValue?: unknown): unknown",
         desc: "Safe deep read with dot and bracket paths. Only own properties are followed, and defaultValue is returned for a missing or undefined result.",
-        params: [p("obj", "unknown", "Object to read from."), p("path", "string | (string | number)[]", 'Path such as "a.b[0].c" or ["a", "b", 0, "c"].'), p("defaultValue", "unknown", "Returned when the path does not exist.", "undefined")], returns: "unknown.", throws: [e("TypeError", "", "path is not a string or array")],
+        params: [p("obj", "unknown", "Object to read from."), p("path", "string | readonly (string | number)[]", 'Path such as "a.b[0].c" or ["a", "b", 0, "c"].'), p("defaultValue", "unknown", "Returned when the path does not exist.", "undefined")], returns: "unknown.", throws: [e("TypeError", "", "path is not a string or array")],
         ex: `const data = { a: { b: [{ c: 5 }] } };
 getByPath(data, "a.b[0].c");       // 5
 getByPath(data, "a.x.y", "none");  // "none"` },
-      { name: "setByPath", sig: "setByPath<T extends object>(obj: T, path: string | (string | number)[], value: unknown): T",
+      { name: "hasByPath", sig: "hasByPath(obj: unknown, path: string | readonly (string | number)[]): boolean",
+        desc: "True when every key of the path is an own property, so a property whose value is undefined counts and an inherited one does not. It uses the getByPath path syntax and never runs getters: an own accessor counts as present, but the path cannot continue through it. Primitives, null, array holes and empty paths give false.",
+        params: [p("obj", "unknown", "Object or array to inspect."), p("path", "string | readonly (string | number)[]", 'Path such as "a.b[0].c" or ["a", "b", 0, "c"].')], returns: "boolean.", throws: [e("TypeError", "", "path is not a string or array")],
+        ex: `const data = { a: { b: undefined, list: [{ id: 1 }] } };
+hasByPath(data, "a.b");           // true
+getByPath(data, "a.b");           // undefined
+hasByPath(data, "a.list[0].id");  // true
+hasByPath(data, "a.missing");     // false
+hasByPath({}, "toString");        // false` },
+      { name: "setByPath", sig: "setByPath<T extends object>(obj: T, path: string | readonly (string | number)[], value: unknown): T",
         desc: "Immutable deep write: returns a copy with the value at the path and shares every branch it did not touch. Missing intermediates become arrays when the next key is an index, otherwise objects. Keys that reach Object.prototype (__proto__, constructor, prototype) throw, as does a path through a Map, Date or class instance.",
-        params: [p("obj", "T extends object", "Plain object or array to copy from. It is never mutated."), p("path", "string | (string | number)[]", 'Path such as "a.b[0].c" or ["a", "b", 0, "c"].'), p("value", "unknown", "Value to store.")], returns: "A new object of the same type.",
+        params: [p("obj", "T extends object", "Plain object or array to copy from. It is never mutated."), p("path", "string | readonly (string | number)[]", 'Path such as "a.b[0].c" or ["a", "b", 0, "c"].'), p("value", "unknown", "Value to store.")], returns: "A new object of the same type.",
         throws: [e("TypeError", "", "obj is not an object, the path uses an unsafe key, or it crosses a non-plain object"), e("RangeError", "", "the path is empty")],
         ex: `const state = { user: { name: "An", tags: ["a"] }, keep: { x: 1 } };
 const next = setByPath(state, "user.tags[1]", "b");
@@ -966,7 +987,7 @@ controller.abort(); // pending rejects with AbortError` },
   signal: controller.signal,
 });` },
       { name: "withTimeout", run: false, sig: "withTimeout<T>(promise: PromiseLike<T>, ms: number, message?: string): Promise<T>",
-        desc: 'Rejects with an Error named "TimeoutError" when the promise is not settled within ms. It does not cancel the underlying work.',
+        desc: 'Rejects with an Error named "TimeoutError" when the promise is not settled within ms, and clears its timer as soon as the promise settles. It does not cancel the underlying work. Node and browsers cap timer delays at 2147483647 ms (about 24.8 days): a larger ms fires almost immediately, so keep ms below that.',
         params: [p("promise", "PromiseLike<T>", "The operation to wait for."), p("ms", "number", "Time limit in milliseconds, 0 or more."), p("message", "string", "Error message.", '"Timed out after {ms}ms"')],
         returns: "Promise<T>.", throws: [e("TypeError", "", "ms is not a finite number"), e("RangeError", "", "ms is negative")],
         ex: `try {

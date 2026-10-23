@@ -1,0 +1,51 @@
+name: Bug report
+description: Report incorrect behavior, a wrong result, a crash or a typing problem.
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Security problems must not be filed here: see [SECURITY.md](https://github.com/PhanHoangQuocTu/precisekit/blob/master/SECURITY.md).
+  - type: input
+    id: version
+    attributes:
+      label: PreciseKit version
+      description: The output of `npm ls @fatdevcon/precisekit`.
+      placeholder: "0.5.1"
+    validations:
+      required: true
+  - type: input
+    id: runtime
+    attributes:
+      label: Runtime and module format
+      description: Node.js / Bun / browser bundler with versions, and ESM or CommonJS.
+      placeholder: "Node.js 22.12, ESM"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: The smallest code that shows the problem. Do not include real secrets or personal data.
+      render: ts
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include the exact result or error message and code.
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Additional context
+      description: Locale, time zone or bundler settings if relevant.

@@ -3367,6 +3367,17 @@ var pick = (obj, keys) => {
   }
   return result;
 };
+function pickBy(obj, predicate) {
+  assertObject(obj, "obj");
+  assertFunction(predicate, "predicate");
+  const result = {};
+  for (const key of Reflect.ownKeys(obj)) {
+    if (!Object.prototype.propertyIsEnumerable.call(obj, key)) continue;
+    const value = obj[key];
+    if (predicate(value, key, obj)) setOwn(result, key, value);
+  }
+  return result;
+}
 var omit = (obj, keys) => {
   assertObject(obj, "obj");
   assertArray(keys, "keys");
@@ -3416,6 +3427,20 @@ var getByPath = (obj, path, defaultValue) => {
     current = target[key];
   }
   return current === void 0 ? defaultValue : current;
+};
+var hasByPath = (obj, path) => {
+  const keys = parsePath(path);
+  if (keys.length === 0) return false;
+  let current = obj;
+  for (let depth = 0; depth < keys.length; depth++) {
+    if (typeof current !== "object" && typeof current !== "function" || current === null) return false;
+    const descriptor = Object.getOwnPropertyDescriptor(current, keys[depth]);
+    if (descriptor === void 0) return false;
+    if (depth === keys.length - 1) return true;
+    if (!("value" in descriptor)) return false;
+    current = descriptor.value;
+  }
+  return true;
 };
 var setByPath = (obj, path, value) => {
   if (typeof obj !== "object" || obj === null) throw new TypeError("obj must be an object or an array");
@@ -3543,6 +3568,10 @@ var groupBy = (arr, keySelector) => {
 var compact = (arr) => {
   assertArray(arr, "arr");
   return arr.filter(Boolean);
+};
+var compactNullish = (arr) => {
+  assertArray(arr, "arr");
+  return arr.filter((item) => item !== null && item !== void 0);
 };
 var difference = (arr, values) => {
   assertArray(arr, "arr");
@@ -4757,4 +4786,4 @@ function nextBusinessDay(date, options = {}) {
   return addBusinessDays(date, 1, options);
 }
 
-export { NumericRangeError, NumericTypeError, abs, addBusinessDays, addDays, addMonths, addWeeks, addYears, allocateMoney, applyDiscount, averageBig, averageValueInArray, batchAsync, binarySearch, bubbleSort, buildQueryString, calculateTax, camelCase, capitalize, chunk, clamp, compact, compareNumbers, countBy, countWords, countingSort, countingSortByDigit, debounce, deepClone, deepEqual, deepMerge, difference, differenceInBusinessDays, differenceInCalendarDays, differenceInCalendarMonths, differenceInDays, differenceInMonths, differenceInYears, divide, drop, endOfDay, endOfISOWeek, endOfMonth, endOfWeek, endOfYear, enumerate, escapeHtml, escapeRegExp, factorial, fibonacci, filterBy, findIndexes, findMax, findMin, first, firstChar, flatten, flattenDeep, formatBytes, formatCompactNumber, formatCurrency, formatDate, formatDuration, formatInTimeZone, formatNumber, formatPercent, formatRelativeTime, formatUnit, fromMinorUnits, gcd, getAbortError, getByPath, getCountryCurrencies, getCurrencyName, getCurrencySymbol, getDayOfYear, getDaysInMonth, getSafeRedirectTarget, getTimeZoneName, getTimeZoneOffset, groupBy, hasDOM, heapSort, heapify, insertionSort, intersection, isAbortError, isAfter, isBefore, isBoolean, isBrowser, isBusinessDay, isClient, isDefined, isEmail, isEmpty, isEqualDate, isFunction, isLeapYear2 as isLeapYear, isNil, isNode, isNumber, isNumeric, isPlainObject3 as isPlainObject, isPrime, isPromiseLike, isSafeRedirectUrl, isSameDay, isSameMonth, isSameYear, isServer, isString, isTimeZone, isToday, isTomorrow, isUrl, isUuid, isValidDate, isWebWorker, isWithinInterval, isYesterday, kebabCase, keyBy, last, lastChar, lcm, linearSearch, lstrip, mapConcurrent, mapSettledConcurrent, mapValues, maskString, maxBy, median, medianBig, memoize, merge, mergeObjects, mergeSort, minBy, modulo, multiply, nextBusinessDay, normalizeArray, normalizeRecord, normalizeWhitespace, omit, once, parseBytes, parseDuration, parseISO, parseLocalizedCurrency, parseLocalizedNumber, parseLocalizedPercent, parseQueryString, partition, pascalCase, percentage, pick, power, quickSort, radixSort, randomInt, range, redactSensitiveFields, removeDiacritics, retry, reverseText, round, rstrip, safeJsonParse, safeJsonStringify, safeToBigInt, safeToBoolean, safeToInteger, safeToNumber, safeToString, sample, sanitizeUrlForLogging, selectionSort, setByPath, shortenString, shuffle, sleep, slugify, snakeCase, sort, sortBy, startOfDay, startOfISOWeek, startOfMonth, startOfWeek2 as startOfWeek, startOfYear, strip, subDays, subMonths, subWeeks, subYears, subtract, sumBig, sumBy, sumValueInArray, summary, take, throttle, title, titleCase, toArray, toBoolean, toDecimalString, toMinorUnits, toNumber, toString, truncateText, unescapeHtml, union, unique, wait, withRetry, withTimeout, zip };
+export { NumericRangeError, NumericTypeError, abs, addBusinessDays, addDays, addMonths, addWeeks, addYears, allocateMoney, applyDiscount, averageBig, averageValueInArray, batchAsync, binarySearch, bubbleSort, buildQueryString, calculateTax, camelCase, capitalize, chunk, clamp, compact, compactNullish, compareNumbers, countBy, countWords, countingSort, countingSortByDigit, debounce, deepClone, deepEqual, deepMerge, difference, differenceInBusinessDays, differenceInCalendarDays, differenceInCalendarMonths, differenceInDays, differenceInMonths, differenceInYears, divide, drop, endOfDay, endOfISOWeek, endOfMonth, endOfWeek, endOfYear, enumerate, escapeHtml, escapeRegExp, factorial, fibonacci, filterBy, findIndexes, findMax, findMin, first, firstChar, flatten, flattenDeep, formatBytes, formatCompactNumber, formatCurrency, formatDate, formatDuration, formatInTimeZone, formatNumber, formatPercent, formatRelativeTime, formatUnit, fromMinorUnits, gcd, getAbortError, getByPath, getCountryCurrencies, getCurrencyName, getCurrencySymbol, getDayOfYear, getDaysInMonth, getSafeRedirectTarget, getTimeZoneName, getTimeZoneOffset, groupBy, hasByPath, hasDOM, heapSort, heapify, insertionSort, intersection, isAbortError, isAfter, isBefore, isBoolean, isBrowser, isBusinessDay, isClient, isDefined, isEmail, isEmpty, isEqualDate, isFunction, isLeapYear2 as isLeapYear, isNil, isNode, isNumber, isNumeric, isPlainObject3 as isPlainObject, isPrime, isPromiseLike, isSafeRedirectUrl, isSameDay, isSameMonth, isSameYear, isServer, isString, isTimeZone, isToday, isTomorrow, isUrl, isUuid, isValidDate, isWebWorker, isWithinInterval, isYesterday, kebabCase, keyBy, last, lastChar, lcm, linearSearch, lstrip, mapConcurrent, mapSettledConcurrent, mapValues, maskString, maxBy, median, medianBig, memoize, merge, mergeObjects, mergeSort, minBy, modulo, multiply, nextBusinessDay, normalizeArray, normalizeRecord, normalizeWhitespace, omit, once, parseBytes, parseDuration, parseISO, parseLocalizedCurrency, parseLocalizedNumber, parseLocalizedPercent, parseQueryString, partition, pascalCase, percentage, pick, pickBy, power, quickSort, radixSort, randomInt, range, redactSensitiveFields, removeDiacritics, retry, reverseText, round, rstrip, safeJsonParse, safeJsonStringify, safeToBigInt, safeToBoolean, safeToInteger, safeToNumber, safeToString, sample, sanitizeUrlForLogging, selectionSort, setByPath, shortenString, shuffle, sleep, slugify, snakeCase, sort, sortBy, startOfDay, startOfISOWeek, startOfMonth, startOfWeek2 as startOfWeek, startOfYear, strip, subDays, subMonths, subWeeks, subYears, subtract, sumBig, sumBy, sumValueInArray, summary, take, throttle, title, titleCase, toArray, toBoolean, toDecimalString, toMinorUnits, toNumber, toString, truncateText, unescapeHtml, union, unique, wait, withRetry, withTimeout, zip };

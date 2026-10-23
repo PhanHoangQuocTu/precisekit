@@ -1,31 +1,85 @@
 #!/usr/bin/env bash
-# Verify, push the release commit and tag, then publish to npm.
-# Usage: scripts/release.sh [--otp=123456]
+# Release pre-flight checklist. This script does NOT publish, push or tag anything.
+#
+# It verifies the working tree and version consistency, runs the same gates as the publish
+# workflow, and then prints the commands you run yourself. Publishing happens in
+# .github/workflows/publish.yml (npm trusted publishing with provenance) when the GitHub
+# release is created.
+#
+# Usage: scripts/release.sh [--skip-tarball]
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+skip_tarball=false
+for arg in "$@"; do
+  case "$arg" in
+    --skip-tarball) skip_tarball=true ;;
+    *)
+      echo "Unknown argument: $arg" >&2
+      echo "Usage: scripts/release.sh [--skip-tarball]" >&2
+      exit 2
+      ;;
+  esac
+done
+
+fail() {
+  echo "ERROR: $*" >&2
+  exit 1
+}
+
 VERSION=$(node -p "require('./package.json').version")
 NAME=$(node -p "require('./package.json').name")
-echo "Releasing $NAME@$VERSION"
+LOCK_VERSION=$(node -p "require('./package-lock.json').version")
+LOCK_ROOT_VERSION=$(node -p "require('./package-lock.json').packages[''].version")
+TAG="v$VERSION"
+echo "Pre-flight for $NAME@$VERSION"
 
-[ -z "$(git status --porcelain)" ] || { echo "Working tree is not clean" >&2; exit 1; }
-git rev-parse "v$VERSION" >/dev/null 2>&1 || { echo "Missing tag v$VERSION" >&2; exit 1; }
-npm whoami >/dev/null 2>&1 || { echo "Not logged in to npm: run 'npm login' first" >&2; exit 1; }
-if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
-  echo "$VERSION is already on npm" >&2
-  exit 1
+echo "==> Version consistency"
+[ "$LOCK_VERSION" = "$VERSION" ] || fail "package-lock.json version ($LOCK_VERSION) differs from package.json ($VERSION)"
+[ "$LOCK_ROOT_VERSION" = "$VERSION" ] || fail "package-lock.json root package version ($LOCK_ROOT_VERSION) differs from package.json ($VERSION)"
+grep -Eq "^## ${VERSION//./\\.}([[:space:]]|$)" CHANGELOG.md || fail "CHANGELOG.md has no '## $VERSION' heading"
+
+echo "==> Working tree and tag"
+[ -z "$(git status --porcelain)" ] || fail "working tree is not clean: commit or stash your changes first"
+branch=$(git rev-parse --abbrev-ref HEAD)
+[ "$branch" = "master" ] || fail "release from master (current branch: $branch)"
+if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+  fail "tag $TAG already exists"
 fi
 
+echo "==> Registry"
+if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
+  fail "$NAME@$VERSION is already published to npm"
+fi
+
+echo "==> Gates (same as the publish workflow)"
 npm ci
 npm run check
 npm run docs:sync
-git diff --quiet || { echo "docs/assets is stale: commit the sync first" >&2; exit 1; }
+git diff --quiet -- docs README.md .github/repository-metadata.json || fail "generated docs are stale: commit the docs:sync output first"
 npm run test:package
 npm run test:docs
 npm run test:site
-npm run test:tarball
+if [ "$skip_tarball" = true ]; then
+  echo "SKIPPED: npm run test:tarball (--skip-tarball)"
+else
+  npm run test:tarball
+fi
+[ -z "$(git status --porcelain)" ] || fail "gates changed the working tree: review 'git status' and commit or discard the changes"
 
-git push origin master
-git push origin "v$VERSION"
-npm publish --access public "$@"
-echo "Published $NAME@$VERSION"
+cat <<MSG
+
+All pre-flight checks passed for $NAME@$VERSION. Nothing was pushed, tagged or published.
+
+Run these yourself, in order:
+
+  git push origin master
+  git tag -a $TAG -m "$NAME $VERSION"
+  git push origin $TAG
+  gh release create $TAG --verify-tag --title "$TAG" --notes-from-tag
+
+Creating the release triggers .github/workflows/publish.yml, which re-runs the gates and
+publishes with npm provenance. Prerequisites (one time): npm trusted publisher registration
+for publish.yml / environment 'npm', and a GitHub environment named 'npm'. See the header of
+.github/workflows/publish.yml.
+MSG

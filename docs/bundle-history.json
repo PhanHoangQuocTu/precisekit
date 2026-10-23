@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "metric": "Minified + gzip size of a full-package import in a browser bundle. Sizes are in bytes; kB means 1,000 bytes.",
+  "note": "Rows are historical fixtures recorded when each release was measured. Fixtures and tooling differ between rows, so compare trends rather than small differences. The current release is measured by scripts/measure-bundle.mjs and stored in docs/bundle-data.json.",
+  "entries": [
+    {
+      "version": "0.3.4",
+      "label": "with two runtime dependencies",
+      "kind": "historical",
+      "fixture": "Full package with decimal.js and date-fns bundled, minified. The CHANGELOG records the sizes rounded to 0.1 kB; the bundler, target and compression level were not recorded and no Brotli figure exists.",
+      "minified": 90900,
+      "gzip": 32300,
+      "brotli": null,
+      "approximate": true,
+      "source": "CHANGELOG.md, 0.3.5 entry (90.9 kB minified, 32.3 kB gzipped)"
+    },
+    {
+      "version": "0.4.2",
+      "label": "no runtime dependencies",
+      "kind": "historical",
+      "fixture": "Full package, published as @fatdevcon/utilities. esbuild 0.27.2, browser platform, ES2020 IIFE, minify and tree-shaking, gzip level 9, Brotli with Node zlib defaults, measured from the packed 0.4.2 tarball on Node v22.22.3.",
+      "minified": 70801,
+      "gzip": 24783,
+      "brotli": 21663,
+      "approximate": false,
+      "source": "plans/v0.4.2/precisekit-v0.4.2-baseline.json (minified, gzip) and plans/v0.5.0/precisekit-v0.5.0-measurements.json (Brotli)"
+    },
+    {
+      "version": "0.5.0",
+      "label": "no runtime dependencies",
+      "kind": "historical",
+      "fixture": "Full package, published as @fatdevcon/precisekit. esbuild 0.27.2, browser platform, ES2020 IIFE, minify and tree-shaking, gzip level 9, Brotli with Node zlib defaults, measured from dist/index.mjs on Node v22.22.3.",
+      "minified": 86535,
+      "gzip": 29801,
+      "brotli": 26171,
+      "approximate": false,
+      "source": "plans/v0.5.0/precisekit-v0.5.0-measurements.json"
+    }
+  ]
+}

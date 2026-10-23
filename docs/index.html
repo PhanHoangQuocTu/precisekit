@@ -3,55 +3,69 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0e1a2e">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" media="(prefers-color-scheme: light)" content="#f5f7fb">
+<meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a101c">
 <meta name="robots" content="index,follow">
 <title>PreciseKit – Exact &amp; Safe TypeScript Utilities</title>
 <meta name="description" content="PreciseKit is a zero-dependency TypeScript utility library for precise calculations, safe data handling, internationalization, dates and async workflows.">
 <meta name="keywords" content="typescript utilities, decimal math javascript, bigint, floating point precision, format currency, time zone, date formatting, lodash alternative, npm">
 <link rel="canonical" href="https://phanhoangquoctu.github.io/precisekit/">
 <meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
 <meta property="og:site_name" content="PreciseKit">
 <meta property="og:title" content="PreciseKit – Exact &amp; Safe TypeScript Utilities">
 <meta property="og:description" content="PreciseKit is a zero-dependency TypeScript utility library for precise calculations, safe data handling, internationalization, dates and async workflows.">
 <meta property="og:url" content="https://phanhoangquoctu.github.io/precisekit/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://phanhoangquoctu.github.io/precisekit/assets/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="PreciseKit: 0.1 + 0.2 in JavaScript gives 0.30000000000000004, summary(0.1, 0.2) gives 0.3.">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="PreciseKit – Exact &amp; Safe TypeScript Utilities">
 <meta name="twitter:description" content="PreciseKit is a zero-dependency TypeScript utility library for precise calculations, safe data handling, internationalization, dates and async workflows.">
+<meta name="twitter:image" content="https://phanhoangquoctu.github.io/precisekit/assets/og-image.png">
+<meta name="twitter:image:alt" content="PreciseKit: 0.1 + 0.2 in JavaScript gives 0.30000000000000004, summary(0.1, 0.2) gives 0.3.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230e1a2e'/%3E%3Cpath d='M9 12h14M9 20h14' stroke='%235ee0a6' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>try{var t=localStorage.getItem("fdc-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="assets/style.css">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"PreciseKit","description":"Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.","applicationCategory":"DeveloperApplication","operatingSystem":"Node.js, Bun, browsers","programmingLanguage":["TypeScript","JavaScript"],"softwareVersion":"0.5.0","license":"https://github.com/PhanHoangQuocTu/precisekit/blob/master/LICENSE","codeRepository":"https://github.com/PhanHoangQuocTu/precisekit","url":"https://phanhoangquoctu.github.io/precisekit/","downloadUrl":"https://www.npmjs.com/package/@fatdevcon/precisekit","alternateName":"@fatdevcon/precisekit"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"PreciseKit","description":"Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.","applicationCategory":"DeveloperApplication","operatingSystem":"Node.js, Bun, browsers","programmingLanguage":["TypeScript","JavaScript"],"softwareVersion":"0.5.1","license":"https://github.com/PhanHoangQuocTu/precisekit/blob/master/LICENSE","codeRepository":"https://github.com/PhanHoangQuocTu/precisekit","url":"https://phanhoangquoctu.github.io/precisekit/","downloadUrl":"https://www.npmjs.com/package/@fatdevcon/precisekit","alternateName":"@fatdevcon/precisekit"}</script>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How do I avoid floating-point errors like 0.1 + 0.2 in JavaScript?","acceptedAnswer":{"@type":"Answer","text":"Use summary, subtract, multiply, divide and round. They calculate in exact decimal arithmetic, so summary(0.1, 0.2) is 0.3 and round(1.005, 2) is 1.01. Pass bigints or numeric strings when values exceed 2^53."}},{"@type":"Question","name":"Does it have dependencies?","acceptedAnswer":{"@type":"Answer","text":"No. Since 0.3.5 the package has zero runtime dependencies. decimal.js and date-fns are development-only test oracles."}},{"@type":"Question","name":"Does it support TypeScript, ESM and CommonJS?","acceptedAnswer":{"@type":"Answer","text":"Yes. It ships ESM, CommonJS and type declarations, and public option and result types are exported alongside the functions."}},{"@type":"Question","name":"Which runtimes are supported?","acceptedAnswer":{"@type":"Answer","text":"Node.js 18 and newer, Bun, and modern browsers. Formatting and time zone helpers use the standard Intl APIs, so output follows the runtime's locale data."}},{"@type":"Question","name":"Can it replace decimal.js, big.js, date-fns or lodash?","acceptedAnswer":{"@type":"Answer","text":"For many everyday cases, yes: exact arithmetic with rounding modes, ISO parsing, token formatting and common collection helpers are covered. It is a focused toolkit, not a full replacement. Libraries with broader scope, such as complex date arithmetic or arbitrary-base numbers, still fit those jobs better."}},{"@type":"Question","name":"Does formatDate use the same tokens as date-fns?","acceptedAnswer":{"@type":"Answer","text":"It supports a documented subset, including yyyy-MM-dd HH:mm:ss, EEEE, do, xxx and PPpp, and accepts a date-fns locale object as options.locale. It is not a complete date-fns replacement; locale-sensitive output depends on runtime ICU data and the selected locale."}},{"@type":"Question","name":"Is it tree-shakeable?","acceptedAnswer":{"@type":"Answer","text":"Yes. The package is side-effect free and every utility is a named export, so bundlers drop what you do not import."}}]}</script>
 </head>
 <body>
 <a class="skip" href="#content">Skip to content</a>
+<a class="skip skip-api" href="#search">Skip to API search</a>
 
 <header class="bar">
   <div class="wrap bar-in">
     <a class="brand" href="#top" aria-label="@fatdevcon/precisekit home"><span>@fatdevcon/</span>precisekit</a>
-    <nav class="nav" aria-label="Primary">
+    <nav class="nav" id="primary-nav" aria-label="Primary">
       <a href="#install">Install</a>
+      <a href="#size">Size</a>
       <a href="#playground">Playground</a>
       <a href="#api">API</a>
       <a href="#examples">Examples</a>
-      <a href="#migration">Migration</a>
       <a href="#releases">Releases</a>
+      <a href="#migration">Migration</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="bar-tools">
       <a class="icon-link" href="https://github.com/PhanHoangQuocTu/precisekit" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg><span>GitHub</span></a>
       <a class="icon-link" href="https://www.npmjs.com/package/@fatdevcon/precisekit" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v10h-9v2H8v-2H3zM8 10v4m4-4v4m4-4v4"/></svg><span>npm</span></a>
       <button class="icon-btn" id="theme" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <button class="icon-btn nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
     </div>
   </div>
 </header>
 
-<main id="content">
+<main id="content" tabindex="-1">
   <section class="hero" id="top">
     <div class="wrap hero-grid">
       <div>
         <h1><!-- package-metadata:hero-name -->PreciseKit<!-- /package-metadata:hero-name --></h1>
         <p class="lead"><!-- package-metadata:tagline -->Exact, Safe &amp; Reliable TypeScript Utilities<!-- /package-metadata:tagline --></p>
-        <p><!-- package-metadata:description -->Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.<!-- /package-metadata:description --></p>
+        <p class="hero-copy"><!-- package-metadata:description -->Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.<!-- /package-metadata:description --></p>
         <div class="install" id="install">
           <div class="install-tabs" role="tablist" aria-label="Package manager">
             <button type="button" role="tab" data-pm="npm" aria-selected="true">npm</button>
@@ -61,7 +75,7 @@
           </div>
           <div class="install-cmd">
             <code id="install-cmd">npm install @fatdevcon/precisekit</code>
-            <button class="copy" id="install-copy" type="button" data-copy="install-cmd" data-copy-text="npm install @fatdevcon/precisekit">Copy</button>
+            <button class="copy" id="install-copy" type="button" aria-label="Copy install command" data-copy="install-cmd" data-copy-text="npm install @fatdevcon/precisekit">Copy</button>
           </div>
         </div>
         <div class="hero-actions">
@@ -76,11 +90,11 @@
           <p>Both lines run live in your browser.</p>
         </div>
         <div class="gauge-tabs" role="group" aria-label="Pick a calculation" data-needs-lib>
-          <button type="button" data-preset="add" aria-selected="true">0.1 + 0.2</button>
-          <button type="button" data-preset="round" aria-selected="false">round 1.005</button>
-          <button type="button" data-preset="sum" aria-selected="false">sum of prices</button>
-          <button type="button" data-preset="big" aria-selected="false">past 2^53</button>
-          <button type="button" data-preset="custom" aria-selected="false">your numbers</button>
+          <button type="button" data-preset="add" aria-pressed="true">0.1 + 0.2</button>
+          <button type="button" data-preset="round" aria-pressed="false">round 1.005</button>
+          <button type="button" data-preset="sum" aria-pressed="false">sum of prices</button>
+          <button type="button" data-preset="big" aria-pressed="false">past 2^53</button>
+          <button type="button" data-preset="custom" aria-pressed="false">your numbers</button>
         </div>
         <div class="read is-native" aria-live="polite">
           <div class="read-label"><span>JavaScript</span><code id="native-expr">0.1 + 0.2</code></div>
@@ -95,7 +109,7 @@
         <div class="gauge-custom" hidden>
           <label>a <input id="gauge-a" value="0.1" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
           <div class="ops" role="group" aria-label="Operation">
-            <button type="button" aria-pressed="true">+</button><button type="button" aria-pressed="false">−</button><button type="button" aria-pressed="false">×</button><button type="button" aria-pressed="false">÷</button>
+            <button type="button" aria-label="add" aria-pressed="true">+</button><button type="button" aria-label="subtract" aria-pressed="false">−</button><button type="button" aria-label="multiply" aria-pressed="false">×</button><button type="button" aria-label="divide" aria-pressed="false">÷</button>
           </div>
           <label>b <input id="gauge-b" value="0.2" inputmode="decimal" autocomplete="off" spellcheck="false"></label>
         </div>
@@ -103,11 +117,11 @@
     </div>
   </section>
 
-  <section class="block" id="overview" aria-label="At a glance">
+  <section class="block block-flush" id="overview" aria-label="At a glance">
     <div class="wrap">
       <dl class="facts">
         <div><dt>0</dt><dd>runtime dependencies. Library code, runtime and build tooling still require maintenance.</dd></div>
-        <div><!-- package-metadata:bundle-fact --><dt>29.8 kB</dt><dd>Full-root browser bundle, minified + gzip. Named imports are measured separately.</dd><!-- /package-metadata:bundle-fact --></div>
+        <div><!-- package-metadata:bundle-fact --><dt>30.0 kB</dt><dd>Full-root browser bundle, minified + gzip. Named imports are measured separately. <a href="#size">Compare releases</a>.</dd><!-- /package-metadata:bundle-fact --></div>
         <div><dt>ESM + CJS</dt><dd>with bundled type declarations and an exact, typed error model.</dd></div>
         <div><dt>Node 18+</dt><dd>Bun and modern browsers, using the runtime's own Intl data.</dd></div>
       </dl>
@@ -115,18 +129,36 @@
   </section>
 
   <section class="block" id="size">
-    <div class="wrap size">
-      <div class="head" style="margin:0">
-        <h2>Smaller by owning the hard parts</h2>
-        <p>Since version 0.3.5 the package uses its own BigInt decimal engine and ISO 8601 parser and formatter. Supported operations are checked against decimal.js and date-fns as development-only test oracles; this is not a claim of full API or behavioral parity with either library.</p>
+    <div class="wrap">
+      <div class="head">
+        <h2>Bundle size, measured</h2>
+        <p>Version 0.3.5 replaced decimal.js and date-fns with an in-package BigInt decimal engine and an ISO 8601 parser and formatter, which removed both runtime dependencies. Supported operations are checked against those libraries as development-only test oracles; this is not a claim of full API or behavioral parity with either. Later releases added features, so the full-package import has grown again while importing a single feature stays small.</p>
       </div>
-      <div>
-        <div class="bars" role="img" aria-label="Bundle comparison. Historical and current measurements are listed below.">
-          <div class="bar-row"><div class="bar-meta"><span>0.3.4, with two dependencies</span><b>32.3 kB gzip</b></div><div class="track"><div class="fill min" style="width:100%"></div><div class="fill" style="width:35.5%"></div></div></div>
-          <div class="bar-row"><div class="bar-meta"><span>0.4.2, historical</span><b>24.8 kB gzip</b></div><div class="track"><div class="fill min" style="width:77.9%"></div><div class="fill" style="width:27.3%"></div></div></div>
-          <div class="bar-row"><div class="bar-meta"><!-- package-metadata:bundle-current --><span>0.5.0, no dependencies</span><b>29.8 kB gzip</b><!-- /package-metadata:bundle-current --></div></div>
+      <div class="size-grid">
+        <figure class="size-chart" aria-labelledby="size-caption">
+          <figcaption id="size-caption">Full-package import, minified + gzip. Every bar uses one scale; the longest bar is the largest size.</figcaption>
+          <ul class="size-legend" aria-label="Legend">
+            <li><span class="swatch is-historical" aria-hidden="true"></span>Historical fixture, recorded at release time</li>
+            <li><span class="swatch is-current" aria-hidden="true"></span>Current measurement, regenerated from the build</li>
+          </ul>
+          <ol class="size-bars"><!-- package-metadata:bundle-history --><li class="size-row is-historical" data-version="0.3.4"><div class="size-id"><span class="size-ver">0.3.4</span><span class="size-kind">historical</span><span class="size-note">with two runtime dependencies</span></div><b class="size-gzip">32.3 kB<small>gzip</small></b><svg class="size-bar" viewBox="0 0 1000 14" preserveAspectRatio="none" role="img" aria-label="0.3.4, historical: 32.3 kB gzip, 100% of the largest bar"><rect class="size-track" width="1000" height="14"/><rect class="size-fill" width="1000" height="14"/></svg><p class="size-sub"><span>90.9 kB minified</span><span class="is-na">Brotli not measured</span><span>rounded to 0.1 kB in the source</span></p></li><li class="size-row is-historical" data-version="0.4.2"><div class="size-id"><span class="size-ver">0.4.2</span><span class="size-kind">historical</span><span class="size-note">no runtime dependencies</span></div><b class="size-gzip">24.8 kB<small>gzip</small></b><svg class="size-bar" viewBox="0 0 1000 14" preserveAspectRatio="none" role="img" aria-label="0.4.2, historical: 24.8 kB gzip, 77% of the largest bar"><rect class="size-track" width="1000" height="14"/><rect class="size-fill" width="767" height="14"/></svg><p class="size-sub"><span>70.8 kB minified</span><span>21.7 kB Brotli</span></p></li><li class="size-row is-historical" data-version="0.5.0"><div class="size-id"><span class="size-ver">0.5.0</span><span class="size-kind">historical</span><span class="size-note">no runtime dependencies</span></div><b class="size-gzip">29.8 kB<small>gzip</small></b><svg class="size-bar" viewBox="0 0 1000 14" preserveAspectRatio="none" role="img" aria-label="0.5.0, historical: 29.8 kB gzip, 92% of the largest bar"><rect class="size-track" width="1000" height="14"/><rect class="size-fill" width="923" height="14"/></svg><p class="size-sub"><span>86.5 kB minified</span><span>26.2 kB Brotli</span></p></li><!-- /package-metadata:bundle-history --><!-- package-metadata:bundle-current --><li class="size-row is-current" data-version="0.5.1"><div class="size-id"><span class="size-ver">0.5.1</span><span class="size-kind">current</span><span class="size-note">no runtime dependencies</span></div><b class="size-gzip">30.0 kB<small>gzip</small></b><svg class="size-bar" viewBox="0 0 1000 14" preserveAspectRatio="none" role="img" aria-label="0.5.1, current: 30.0 kB gzip, 93% of the largest bar"><rect class="size-track" width="1000" height="14"/><rect class="size-fill" width="927" height="14"/></svg><p class="size-sub"><span>87.1 kB minified</span><span>26.4 kB Brotli</span></p></li><!-- /package-metadata:bundle-current --></ol>
+          <p class="bar-note"><!-- package-metadata:bundle-note -->0.5.1: 87.1 kB minified / 30.0 kB gzip / 26.4 kB Brotli. Measured with esbuild 0.28.2; historical figures retain their original fixtures.<!-- /package-metadata:bundle-note --></p>
+          <details class="size-how">
+            <summary>How each row was measured</summary>
+            <p>Sizes are decimal kilobytes (1 kB = 1,000 bytes). Fixtures and tooling differ between rows, so read the trend rather than small differences.</p>
+            <dl><!-- package-metadata:bundle-methods --><div><dt>0.3.4, historical</dt><dd>Full package with decimal.js and date-fns bundled, minified. The CHANGELOG records the sizes rounded to 0.1 kB; the bundler, target and compression level were not recorded and no Brotli figure exists. Source: CHANGELOG.md, 0.3.5 entry (90.9 kB minified, 32.3 kB gzipped).</dd></div><div><dt>0.4.2, historical</dt><dd>Full package, published as @fatdevcon/utilities. esbuild 0.27.2, browser platform, ES2020 IIFE, minify and tree-shaking, gzip level 9, Brotli with Node zlib defaults, measured from the packed 0.4.2 tarball on Node v22.22.3. Source: plans/v0.4.2/precisekit-v0.4.2-baseline.json (minified, gzip) and plans/v0.5.0/precisekit-v0.5.0-measurements.json (Brotli).</dd></div><div><dt>0.5.0, historical</dt><dd>Full package, published as @fatdevcon/precisekit. esbuild 0.27.2, browser platform, ES2020 IIFE, minify and tree-shaking, gzip level 9, Brotli with Node zlib defaults, measured from dist/index.mjs on Node v22.22.3. Source: plans/v0.5.0/precisekit-v0.5.0-measurements.json.</dd></div><div><dt>0.5.1, current</dt><dd>Full package, @fatdevcon/precisekit. esbuild 0.28.2, browser platform, ES2020 IIFE, minify and tree-shaking, gzip level 9, Brotli with Node zlib defaults, measured from dist/index.mjs (SHA-256 8ecd0bdcdc54) on Node v22.22.3. Source: docs/bundle-data.json, generated by scripts/measure-bundle.mjs.</dd></div><!-- /package-metadata:bundle-methods --></dl>
+          </details>
+        </figure>
+        <div class="size-parts">
+          <h3>Importing only what you use</h3>
+          <p>Named imports from the current release, minified + gzip with the same toolchain. A feature row imports every function in that area; a function row imports one function.</p>
+          <div class="scroll">
+            <table class="size-table">
+              <thead><tr><th scope="col">Import</th><th scope="col">gzip</th><th scope="col">Brotli</th></tr></thead>
+              <tbody><!-- package-metadata:bundle-consumers --><tr><th scope="row">Money</th><td>6.1 kB</td><td>5.3 kB</td></tr><tr><th scope="row">Locale parsing</th><td>6.1 kB</td><td>5.2 kB</td></tr><tr><th scope="row">Security</th><td>1.7 kB</td><td>1.5 kB</td></tr><tr><th scope="row">Business calendar</th><td>1.5 kB</td><td>1.3 kB</td></tr><tr><th scope="row">Normalization</th><td>1.8 kB</td><td>1.6 kB</td></tr><tr><th scope="row">Concurrency</th><td>1.2 kB</td><td>1.0 kB</td></tr><tr><th scope="row"><code>compactNullish</code></th><td>0.8 kB</td><td>0.7 kB</td></tr><tr><th scope="row"><code>hasByPath</code></th><td>0.8 kB</td><td>0.7 kB</td></tr><tr><th scope="row"><code>pickBy</code></th><td>1.0 kB</td><td>0.8 kB</td></tr><!-- /package-metadata:bundle-consumers --></tbody>
+            </table>
+          </div>
         </div>
-        <p class="bar-note"><!-- package-metadata:bundle-note -->0.5.0: 86.5 kB minified / 29.8 kB gzip / 26.2 kB Brotli. Measured with esbuild 0.27.2; historical figures retain their original fixtures.<!-- /package-metadata:bundle-note --></p>
       </div>
     </div>
   </section>
@@ -142,7 +174,7 @@
         <div class="inv-row"><div><h3>Formatting and currencies</h3></div><div><p>Numbers, currencies, percentages, units, compact values and byte sizes through the runtime's Intl data, with ISO 4217 country and currency metadata. Parse sizes and durations back to exact values.</p><div class="chips"><a class="chip" href="#formatCurrency">formatCurrency</a><a class="chip" href="#formatBytes">formatBytes</a><a class="chip" href="#parseBytes">parseBytes</a><a class="chip" href="#getCountryCurrencies">getCountryCurrencies</a></div></div></div>
         <div class="inv-row"><div><h3>Dates and time zones</h3></div><div><p>Token-based formatting in any IANA zone, ISO 8601 parsing, calendar arithmetic that respects daylight saving, relative time, and DST-aware offsets in seconds, minutes or hours.</p><div class="chips"><a class="chip" href="#formatDate">formatDate</a><a class="chip" href="#parseISO">parseISO</a><a class="chip" href="#addMonths">addMonths</a><a class="chip" href="#formatInTimeZone">formatInTimeZone</a><a class="chip" href="#getTimeZoneOffset">getTimeZoneOffset</a></div></div></div>
         <div class="inv-row"><div><h3>Unicode-safe text</h3></div><div><p>Truncate, mask, slugify and change case without splitting emoji, flags or combining accents. Vietnamese and other diacritics are handled.</p><div class="chips"><a class="chip" href="#truncateText">truncateText</a><a class="chip" href="#slugify">slugify</a><a class="chip" href="#maskString">maskString</a><a class="chip" href="#escapeRegExp">escapeRegExp</a></div></div></div>
-        <div class="inv-row"><div><h3>Collections and objects</h3></div><div><p>Group, chunk, partition and range arrays; deep clone, merge and compare objects; read and write nested paths safely, with prototype-pollution guards.</p><div class="chips"><a class="chip" href="#groupBy">groupBy</a><a class="chip" href="#deepMerge">deepMerge</a><a class="chip" href="#getByPath">getByPath</a><a class="chip" href="#setByPath">setByPath</a></div></div></div>
+        <div class="inv-row"><div><h3>Collections and objects</h3></div><div><p>Group, chunk, partition and range arrays; drop null and undefined entries; deep clone, merge and compare objects; keep fields by predicate; read and check nested own properties, and write nested paths with prototype-pollution guards.</p><div class="chips"><a class="chip" href="#groupBy">groupBy</a><a class="chip" href="#compactNullish">compactNullish</a><a class="chip" href="#deepMerge">deepMerge</a><a class="chip" href="#pickBy">pickBy</a><a class="chip" href="#getByPath">getByPath</a><a class="chip" href="#hasByPath">hasByPath</a><a class="chip" href="#setByPath">setByPath</a></div></div></div>
         <div class="inv-row"><div><h3>Async control and algorithms</h3></div><div><p>Debounce, throttle, memoize, retry with backoff, abort-aware waits and timeouts, plus classic sorting and searching with documented limits.</p><div class="chips"><a class="chip" href="#withRetry">withRetry</a><a class="chip" href="#debounce">debounce</a><a class="chip" href="#withTimeout">withTimeout</a><a class="chip" href="#quickSort">quickSort</a></div></div></div>
       </div>
     </div>
@@ -188,22 +220,30 @@ const config = await withRetry(() => fetch("/config.json").then((r) => r.json())
     <div class="wrap">
       <div class="head">
         <h2>Playground</h2>
-        <p>Run one supported function call per line against the real package. Values can be strings, numbers, bigints, arrays and objects.</p>
+        <p>Run one supported function call per line against the real package. Values can be strings, numbers, bigints, arrays and objects. Lines are parsed as data and calls, never executed as code.</p>
       </div>
-      <div class="play-bar" role="tablist" aria-label="Samples">
-        <div class="tabs" style="margin:0">
-          <button type="button" role="tab" data-sample="Money" aria-selected="true">Money</button>
-          <button type="button" role="tab" data-sample="Big numbers" aria-selected="false">Big numbers</button>
-          <button type="button" role="tab" data-sample="Dates" aria-selected="false">Dates</button>
-          <button type="button" role="tab" data-sample="Text" aria-selected="false">Text</button>
-          <button type="button" role="tab" data-sample="Locale" aria-selected="false">Locale</button>
-          <button type="button" role="tab" data-sample="Security" aria-selected="false">Security</button>
+      <div class="play-bar">
+        <div class="tabs flush" role="tablist" aria-label="Samples">
+          <button type="button" role="tab" id="play-tab-money" aria-controls="play-panel" data-sample="Money" aria-selected="true">Money</button>
+          <button type="button" role="tab" id="play-tab-big" aria-controls="play-panel" data-sample="Big numbers" aria-selected="false">Big numbers</button>
+          <button type="button" role="tab" id="play-tab-dates" aria-controls="play-panel" data-sample="Dates" aria-selected="false">Dates</button>
+          <button type="button" role="tab" id="play-tab-text" aria-controls="play-panel" data-sample="Text" aria-selected="false">Text</button>
+          <button type="button" role="tab" id="play-tab-collections" aria-controls="play-panel" data-sample="Collections" aria-selected="false">Collections</button>
+          <button type="button" role="tab" id="play-tab-locale" aria-controls="play-panel" data-sample="Locale" aria-selected="false">Locale</button>
+          <button type="button" role="tab" id="play-tab-security" aria-controls="play-panel" data-sample="Security" aria-selected="false">Security</button>
+          <button type="button" role="tab" id="play-tab-cleaning" aria-controls="play-panel" data-sample="Cleaning" aria-selected="false">Cleaning</button>
+          <button type="button" role="tab" id="play-tab-safe" aria-controls="play-panel" data-sample="Safe conversion" aria-selected="false">Safe conversion</button>
         </div>
-        <span class="hint">Runs locally in your browser.</span>
       </div>
-      <div class="play">
-        <textarea id="play-input" spellcheck="false" autocomplete="off" autocapitalize="off" aria-label="Supported function calls to run"></textarea>
-        <div class="play-out" id="play-output" aria-live="polite"></div>
+      <div class="play" id="play-panel" role="tabpanel" aria-labelledby="play-tab-money">
+        <div class="play-pane">
+          <div class="pane-head"><label for="play-input">Input, one call per line</label><button class="copy" type="button" aria-label="Copy playground input" data-copy="play-input">Copy</button></div>
+          <textarea id="play-input" spellcheck="false" autocomplete="off" autocapitalize="off"></textarea>
+        </div>
+        <div class="play-pane">
+          <div class="pane-head"><span id="play-out-label">Result</span><span class="pane-hint">Runs locally in your browser</span></div>
+          <div class="play-out" id="play-output" role="region" aria-labelledby="play-out-label" aria-live="polite" tabindex="0"></div>
+        </div>
       </div>
     </div>
   </section>
@@ -212,10 +252,10 @@ const config = await withRetry(() => fetch("/config.json").then((r) => r.json())
     <div class="wrap">
       <div class="head">
         <h2>API reference</h2>
-        <p><span id="api-count">216</span> documented functions with parameters, return values, errors and examples. Executable examples are checked against the built package. Illustrative and async examples are marked separately; some environment-dependent expectations are skipped by the docs runner.</p>
+        <p><span id="api-count">219</span> documented functions with parameters, return values, errors and examples. Executable examples are checked against the built package. Illustrative and async examples are marked separately; some environment-dependent expectations are skipped by the docs runner.</p>
       </div>
       <div class="api-layout">
-        <aside class="api-side">
+        <aside class="api-side" aria-label="Filter and browse the API">
           <div class="search"><input id="search" type="search" placeholder="Filter functions" aria-label="Filter functions" autocomplete="off" spellcheck="false"><kbd aria-hidden="true">/</kbd></div>
           <label class="category-label" for="category-filter">Category</label>
           <select id="category-filter"><option value="">All categories</option></select>
@@ -223,7 +263,11 @@ const config = await withRetry(() => fetch("/config.json").then((r) => r.json())
           <button class="btn api-nav-toggle" id="api-nav-toggle" type="button" aria-expanded="false" aria-controls="nav-groups-wrap">Browse by group</button>
           <div class="api-nav-wrap" id="nav-groups-wrap"><nav class="api-nav" id="nav-groups" aria-label="API groups"></nav></div>
         </aside>
-        <div>
+        <div class="api-main">
+          <div class="api-toolbar" role="group" aria-label="Expand or collapse all functions">
+            <button class="btn-sm" id="expand-all" type="button">Expand all</button>
+            <button class="btn-sm" id="collapse-all" type="button">Collapse all</button>
+          </div>
           <div id="api-reference"><div class="noscript"><p>The full reference needs JavaScript. See the <a href="https://github.com/PhanHoangQuocTu/precisekit#api-index">README overview</a> for workflows; type declarations also ship with the package.</p></div></div>
           <p class="section-empty" id="empty" hidden>No function matches that filter. Try a shorter word such as <code>format</code> or <code>array</code>.</p>
         </div>
@@ -270,6 +314,18 @@ const next = setByPath(state, "user.tags[1]", "b");
 
 formatCurrency("12345678901234567890.129", "USD");
 // "$12,345,678,901,234,567,890.13"</code></pre></div></article>
+        <article class="recipe"><h3>How to drop empty values from arrays and objects</h3><div class="code"><pre class="hl"><code>import { compactNullish, pickBy } from "@fatdevcon/precisekit";
+
+compactNullish([0, null, "", undefined, false, 1]); // [0, "", false, 1]
+pickBy({ id: 7, note: null, flag: false }, (value) => value !== null);
+// { id: 7, flag: false }</code></pre></div></article>
+        <article class="recipe"><h3>How to check a nested key without reading it</h3><div class="code"><pre class="hl"><code>import { getByPath, hasByPath } from "@fatdevcon/precisekit";
+
+const data = { a: { b: undefined, list: [{ id: 1 }] } };
+hasByPath(data, "a.b");          // true
+getByPath(data, "a.b");          // undefined
+hasByPath(data, "a.list[0].id"); // true
+hasByPath(data, "a.missing");    // false</code></pre></div></article>
       </div>
     </div>
   </section>
@@ -277,12 +333,11 @@ formatCurrency("12345678901234567890.129", "USD");
   <section class="block" id="releases">
     <div class="wrap">
       <div class="head">
-        <h2><!-- package-metadata:release-title -->Release 0.5.0<!-- /package-metadata:release-title --></h2>
-        <div><!-- package-metadata:release-summary --><ul><li>Exact money conversion, proportional allocation, inclusive/exclusive taxes and fixed/percentage discounts with explicit currency precision policies.</li><li>Typed record/array normalization with indexed errors, own-property validation and safe failure results.</li><li>Strict locale-aware number, currency and percent parsers that preserve exact decimal text.</li><li>Ordered concurrency-limited mapping, settled mapping and lazy asynchronous batches with AbortSignal support.</li><li>Timezone-independent business-calendar helpers with configurable weekends and caller-supplied holidays.</li><li>Redirect validation, safe fallback selection, cycle-preserving field redaction and URL sanitization for logs.</li><li>Renamed the package from <code>@fatdevcon/utilities</code> to <code>@fatdevcon/precisekit</code> and moved the active repository and documentation URLs to the PreciseKit identity.</li><li>Updated documentation synchronization, package, tarball and static-site verification to resolve current package identity, version and URLs from authoritative manifest metadata instead of stale release literals.</li><li>Renamed the checked-in playground bundle to <code>docs/assets/precisekit.mjs</code> and synchronized installation commands, imports, SEO metadata and crawler URLs.</li><li>Existing functions, signatures, ESM/CommonJS behavior, TypeScript declarations, exact numeric behavior and root export paths are unchanged after updating the package import name.</li><li>The package retains zero runtime dependencies, readable unminified output and side-effect-free named exports.</li><li>Historical release notes continue to use the package name under which those versions were published.</li></ul><!-- /package-metadata:release-summary --></div>
+        <h2><!-- package-metadata:release-title -->Release 0.5.1<!-- /package-metadata:release-title --></h2>
+        <div class="release-summary"><!-- package-metadata:release-summary --><ul><li><code>compactNullish</code> removes only <code>null</code> and <code>undefined</code> from an array and keeps <code>0</code>, <code>false</code>, <code>&quot;&quot;</code>, <code>NaN</code> and <code>0n</code>. It accepts readonly arrays, returns a new array and narrows the element type with <code>NonNullable</code>.</li><li><code>hasByPath</code> reports whether a nested path is made of own properties, so properties whose value is <code>undefined</code> count and inherited ones do not. It uses the <code>getByPath</code> path syntax, never runs getters and returns <code>false</code> for array holes, primitives and empty paths.</li><li><code>pickBy</code> copies the own enumerable string and symbol properties accepted by a predicate into a new object with plain data properties. A type-guard predicate narrows the result type, and an own <code>__proto__</code> key is copied as data without changing any prototype.</li><li>Contributor documentation: <code>CONTRIBUTING.md</code>, <code>CODE_OF_CONDUCT.md</code>, issue and pull request templates and <code>CODEOWNERS</code>.</li><li><code>getByPath</code>, <code>setByPath</code> and <code>hasByPath</code> accept readonly array paths. The change only widens the accepted parameter type.</li><li>Added tests for <code>withTimeout</code> timer cleanup, late-rejection handling, error messages and argument validation, and documented its 2147483647 ms timer limit. Its behavior is unchanged.</li><li>Rebuilt the documentation site with a documentation-style layout, compact searchable API cards, copyable code blocks, an accessible mobile sidebar and consistent light and dark themes. The themes use <code>light-dark()</code>, which needs a browser from 2024 or later.</li><li>Replaced the bundle-size chart with horizontal bars on one gzip scale that separate historical fixtures from the current measurement, and added the new helpers to the measured consumer fixtures.</li><li>Redesigned the README with badges, a contents list, a compatibility table and security notes.</li><li>Updated development dependencies to their latest stable releases, including <code>tsup</code> 9, <code>eslint</code> 10.13, <code>@typescript-eslint</code> 8.72, <code>rollup</code> 4.65 and <code>ts-jest</code> 29.4.15, and removed the unused <code>eslint-config-prettier</code>. Rebuilding the unchanged 0.5.0 sources with the new toolchain produced byte-identical <code>dist</code> files.</li><li>Building the repository now needs Node.js 22.18 or newer because <code>tsup</code> 9 requires it. The published package still supports Node.js 18 and newer.</li><li><code>scripts/release.sh</code> no longer pushes or publishes. It runs the pre-release checks and prints the tag and release commands.</li><li>GitHub Actions are pinned to full commit SHAs at their latest major versions, and CI has concurrency groups, <code>persist-credentials: false</code> and a Node 18, 20, 22 and 24 compatibility matrix.</li><li>The publish workflow uses npm trusted publishing (OIDC) with provenance instead of a long-lived token. It needs the npm trusted publisher and a GitHub <code>npm</code> environment to be configured before the next release.</li><li>Added CodeQL and dependency-review workflows and grouped Dependabot updates.</li><li>No existing function, signature, runtime result, error code or export path changed. The package still has zero runtime dependencies, readable unminified output and side-effect-free named exports.</li></ul><!-- /package-metadata:release-summary --></div>
         <p>The full history is in the <a href="https://github.com/PhanHoangQuocTu/precisekit/blob/master/CHANGELOG.md">changelog</a>.</p>
       </div>
       <div class="notes">
-        <div><h3>PreciseKit identity</h3><p>Package imports, repository links, documentation URLs and the checked-in playground artifact now use the new name consistently.</p></div>
         <div><h3>Installed-package verification</h3><p>Clean consumer fixtures verify Node, Bun, ESM, CommonJS and strict TypeScript declarations from the packed tarball.</p></div>
         <div><h3>Historical accuracy</h3><p>Older changelog and migration records retain the package name under which those versions were released.</p></div>
         <div><h3>Compatible and measured</h3><p>Strict conversions, readable ESM/CJS output, exact numeric behavior and zero runtime dependencies remain intact.</p></div>
@@ -301,13 +356,13 @@ formatCurrency("12345678901234567890.129", "USD");
 npm install @fatdevcon/precisekit</code></pre></div></article>
         <article class="recipe"><h3>Update imports</h3><div class="code"><pre><code>import { summary, formatCurrency } from "@fatdevcon/precisekit";</code></pre></div></article>
       </div>
-      <p>The old package is not aliased or deprecated automatically. No function rename or behavioral compatibility break is introduced by the package migration.</p>
+      <p class="after-note">The old package is not aliased or deprecated automatically. No function rename or behavioral compatibility break is introduced by the package migration.</p>
     </div>
   </section>
 
   <section class="block" id="faq">
     <div class="wrap">
-      <div class="head"><h2>Frequently asked questions</h2></div>
+      <div class="head flush"><h2>Frequently asked questions</h2></div>
       <div class="faq">
         <details><summary>How do I avoid floating-point errors like 0.1 + 0.2 in JavaScript?</summary><p>Use <code>summary</code>, <code>subtract</code>, <code>multiply</code>, <code>divide</code> and <code>round</code>. They calculate in exact decimal arithmetic, so <code>summary(0.1, 0.2)</code> is <code>0.3</code> and <code>round(1.005, 2)</code> is <code>1.01</code>. Pass bigints or numeric strings when values exceed 2^53.</p></details>
         <details><summary>Does it have dependencies?</summary><p>No. Since 0.3.5 the package has zero runtime dependencies. decimal.js and date-fns are development-only test oracles.</p></details>
@@ -323,7 +378,7 @@ npm install @fatdevcon/precisekit</code></pre></div></article>
 
 <footer>
   <div class="wrap foot">
-    <span>MIT licensed. <!-- package-metadata:footer-version -->Version 0.5.0<!-- /package-metadata:footer-version -->.</span>
+    <span>MIT licensed. <!-- package-metadata:footer-version -->Version 0.5.1<!-- /package-metadata:footer-version -->.</span>
     <nav aria-label="Project links">
       <a href="https://github.com/PhanHoangQuocTu/precisekit/blob/master/LICENSE">License</a>
       <a href="https://github.com/PhanHoangQuocTu/precisekit/issues">Issues</a>
