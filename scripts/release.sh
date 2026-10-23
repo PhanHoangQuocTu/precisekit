@@ -48,9 +48,8 @@ if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
 fi
 
 echo "==> Registry"
-if npm view "$NAME@$VERSION" version >/dev/null 2>&1; then
-  fail "$NAME@$VERSION is already published to npm"
-fi
+node --test scripts/verify-release-registry.test.mjs
+node scripts/verify-release-registry.mjs
 
 echo "==> Gates (same as the publish workflow)"
 npm ci
@@ -60,9 +59,11 @@ git diff --quiet -- docs README.md .github/repository-metadata.json || fail "gen
 npm run test:package
 npm run test:docs
 npm run test:site
+npm audit --audit-level=low --omit=dev
 if [ "$skip_tarball" = true ]; then
-  echo "SKIPPED: npm run test:tarball (--skip-tarball)"
+  echo "SKIPPED: npm run test:bun and npm run test:tarball (--skip-tarball); full release verification remains required"
 else
+  npm run test:bun
   npm run test:tarball
 fi
 [ -z "$(git status --porcelain)" ] || fail "gates changed the working tree: review 'git status' and commit or discard the changes"

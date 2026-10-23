@@ -45,7 +45,8 @@ const DATE_RE = /^-?(?:(\d{3})|(\d{2})(?:-?(\d{2}))?|W(\d{2})(?:-?(\d{1}))?|)$/;
 const TIME_RE = /^(\d{2}(?:[.,]\d*)?)(?::?(\d{2}(?:[.,]\d*)?))?(?::?(\d{2}(?:[.,]\d*)?))?$/;
 const ZONE_RE = /^([+-])(\d{2})(?::?(\d{2}))?$/;
 const YEAR_RE = /^(?:(\d{4}|[+-]\d{6})|(\d{2}|[+-]\d{4})$)/;
-const ZONE_TAIL_RE = /([Z+-].*)$/;
+// Anchoring the prefix prevents retrying the suffix at every sign in malformed input.
+const ZONE_TAIL_RE = /^[^Z+-]*([Z+-].*)$/;
 
 const unit = (value: string | undefined): number => (value ? parseInt(value, 10) : 1);
 const timeUnit = (value: string | undefined): number => (value && parseFloat(value.replace(",", "."))) || 0;
@@ -371,23 +372,52 @@ const zoneFull = (offset: number, delimiter: string): string => {
 const zoneOptionalMinutes = (offset: number, delimiter: string): string =>
   offset % 60 === 0 ? (offset > 0 ? "-" : "+") + pad(Math.abs(offset) / 60, 2) : zoneFull(offset, delimiter);
 
-const TOKEN_RE = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g;
-const LONG_TOKEN_RE = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g;
+/** Consume each pattern character once, including escaped and unterminated quoted literals. */
+const tokenize = (pattern: string, long: boolean): string[] => {
+  const pieces: string[] = [];
+  let at = 0;
+  while (at < pattern.length) {
+    const start = at++;
+    const letter = pattern[start];
+    if (letter === "'") {
+      if (pattern[at] === "'") at++;
+      else {
+        while (at < pattern.length) {
+          if (pattern[at++] !== "'") continue;
+          if (pattern[at] === "'") at++;
+          else break;
+        }
+      }
+    } else if (long && (letter === "P" || letter === "p")) {
+      while (pattern[at] === letter) at++;
+      if (letter === "P") while (pattern[at] === "p") at++;
+    } else if (!long && "yYQqMLwIdDecihHKkms".includes(letter) && pattern[at] === "o") {
+      at++;
+    } else if (!long && /\w/.test(letter)) {
+      while (pattern[at] === letter) at++;
+    } else if (/^[\r\n\u2028\u2029]$/.test(letter)) {
+      // The previous dot fallback ignored line terminators outside quoted literals.
+      continue;
+    }
+    pieces.push(pattern.slice(start, at));
+  }
+  return pieces;
+};
 const TOKEN_LETTERS = "GyYuRQqMLwIdDEeciabBhHKkmsSXxOztT";
 const LETTER_RE = /[a-zA-Z]/;
 
-const unquote = (text: string): string => /^'([^]*?)'?$/.exec(text)![1].replace(/''/g, "'");
+const unquote = (text: string): string => text.slice(1, text.endsWith("'") ? -1 : undefined).replace(/''/g, "'");
 
 const expandLong = (token: string, names: Names): string => {
   const widths = ["short", "medium", "long", "full"] as const;
   const pick = (count: number): (typeof widths)[number] => widths[Math.min(count, 4) - 1];
   const long = names.long ?? englishNames.long!;
-  const match = /(P+)(p+)?/.exec(token)!;
   if (token[0] === "p") return long("time", pick(token.length));
-  if (!match[2]) return long("date", pick(token.length));
-  return long("dateTime", pick(match[1].length))
-    .replace("{{date}}", long("date", pick(match[1].length)))
-    .replace("{{time}}", long("time", pick(match[2].length)));
+  const timeStart = token.indexOf("p");
+  if (timeStart === -1) return long("date", pick(token.length));
+  return long("dateTime", pick(timeStart))
+    .replace("{{date}}", long("date", pick(timeStart)))
+    .replace("{{time}}", long("time", pick(token.length - timeStart)));
 };
 
 /**
@@ -404,7 +434,7 @@ export const formatTokens = (fields: Fields, pattern: string, locale?: FormatLoc
     throw new RangeError("firstWeekContainsDate must be between 1 and 7 inclusively");
   }
 
-  const expanded = (pattern.match(LONG_TOKEN_RE) ?? [])
+  const expanded = tokenize(pattern, true)
     .map((piece) => (piece[0] === "P" || piece[0] === "p" ? expandLong(piece, names) : piece))
     .join("");
 
@@ -526,7 +556,7 @@ export const formatTokens = (fields: Fields, pattern: string, locale?: FormatLoc
     }
   };
 
-  let parts: FormatPart[] = (expanded.match(TOKEN_RE) ?? []).map((piece) => {
+  let parts: FormatPart[] = tokenize(expanded, false).map((piece) => {
     if (piece === "''") return { isToken: false, value: "'" };
     if (piece[0] === "'") return { isToken: false, value: unquote(piece) };
     if (TOKEN_LETTERS.includes(piece[0])) return { isToken: true, value: piece };

@@ -1,11 +1,11 @@
 {
   "name": "@fatdevcon/precisekit",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Zero-dependency TypeScript utilities for exact math, financial calculations, safe data handling, locale parsing, dates, security and async workflows.",
   "branding": {
     "displayName": "PreciseKit",
     "tagline": "Exact, Safe & Reliable TypeScript Utilities",
-    "seoTitle": "PreciseKit – Exact & Safe TypeScript Utilities",
+    "seoTitle": "PreciseKit \u2013 Exact & Safe TypeScript Utilities",
     "seoDescription": "PreciseKit is a zero-dependency TypeScript utility library for precise calculations, safe data handling, internationalization, dates and async workflows."
   },
   "main": "dist/index.js",
@@ -33,11 +33,11 @@
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run lint && npm test -- --runInBand && npm run build",
     "test:package": "node scripts/verify-package.mjs",
-    "test:bun": "bun test src/__tests__/numeric.test.ts src/__tests__/differential.test.ts src/__tests__/edge-cases.test.ts src/__tests__/oracle-decimal.test.ts src/__tests__/oracle-date.test.ts src/__tests__/index.test.ts src/__tests__/formatter.test.ts src/__tests__/money.test.ts src/__tests__/locale.test.ts src/__tests__/normalization.test.ts src/__tests__/security.test.ts src/__tests__/business.test.ts src/__tests__/concurrent.test.ts src/__tests__/v051-helpers.test.ts",
+    "test:bun": "bun test src/__tests__/numeric.test.ts src/__tests__/differential.test.ts src/__tests__/edge-cases.test.ts src/__tests__/oracle-decimal.test.ts src/__tests__/oracle-date.test.ts src/__tests__/index.test.ts src/__tests__/formatter.test.ts src/__tests__/money.test.ts src/__tests__/locale.test.ts src/__tests__/normalization.test.ts src/__tests__/security.test.ts src/__tests__/business.test.ts src/__tests__/concurrent.test.ts src/__tests__/v051-helpers.test.ts src/__tests__/v052-security-parsing.test.ts",
     "test:tarball": "node scripts/verify-tarball.mjs",
     "prepack": "npm run build",
     "audit": "npm audit --audit-level=low --omit=dev",
-    "test:docs": "node scripts/verify-docs.mjs && node scripts/verify-docs-sync.mjs",
+    "test:docs": "node --test scripts/docs-text.test.mjs && node scripts/verify-docs.mjs && node scripts/verify-docs-sync.mjs",
     "test:site": "node scripts/verify-site.mjs",
     "docs:sync": "node scripts/sync-docs.mjs",
     "test:bundle": "node scripts/measure-bundle.mjs",

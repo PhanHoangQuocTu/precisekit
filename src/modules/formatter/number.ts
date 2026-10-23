@@ -127,7 +127,35 @@ export function formatBytes(value: NumericInput, options: BytesFormatOptions = {
   return `${text} ${units[index]}`;
 }
 
-const BYTE_UNIT = /^\s*([+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:e[+-]?[0-9]+)?)\s*([a-z]*)\s*$/i;
+/** Parse the number and unit without backtracking over overlapping digit/whitespace runs. */
+const splitByteSize = (text: string): [string, string] | undefined => {
+  const input = text.trim();
+  let at = input[0] === "+" ? 1 : 0;
+  const isDigit = (index: number): boolean => input[index] >= "0" && input[index] <= "9";
+  const start = at;
+  while (isDigit(at)) at++;
+  let digits = at - start;
+  if (input[at] === ".") {
+    const fraction = ++at;
+    while (isDigit(at)) at++;
+    digits += at - fraction;
+  }
+  if (digits === 0) return undefined;
+  if (input[at] === "e" || input[at] === "E") {
+    let end = at + 1;
+    if (input[end] === "+" || input[end] === "-") end++;
+    const exponent = end;
+    while (isDigit(end)) end++;
+    // An E without exponent digits can instead begin an EB/EiB unit.
+    if (end > exponent) at = end;
+  }
+  const numberEnd = at;
+  while (at < input.length && /\s/.test(input[at])) at++;
+  const unitStart = at;
+  while (at < input.length && /[a-z]/i.test(input[at])) at++;
+  if (at !== input.length) return undefined;
+  return [input.slice(0, numberEnd), input.slice(unitStart)];
+};
 
 export interface ParseBytesOptions {
   /** What a bare "KB"/"MB"/"GB" means: 1000 (SI, default) or 1024. "KiB"/"MiB" are always 1024. */
@@ -153,12 +181,12 @@ export function parseBytes(text: string, options: ParseBytesOptions = {}): numbe
   const invalid = (): never => {
     throw new NumericTypeError("ERR_INVALID_FORMAT", `Cannot read ${describeValue(text)} as a size such as "1.5 GB" or "512 KiB"`);
   };
-  const match = BYTE_UNIT.exec(text);
+  const match = splitByteSize(text);
   if (!match) return invalid();
-  const unit = /^(?:b|([kmgtpezyrq])(i?)b)?$/.exec(match[2].toLowerCase());
+  const unit = /^(?:b|([kmgtpezyrq])(i?)b)?$/.exec(match[1].toLowerCase());
   if (!unit || (unit[2] && "rq".includes(unit[1]))) return invalid();
   const power = unit[1] ? "kmgtpezyrq".indexOf(unit[1]) + 1 : 0;
-  const bytes = new ExactDecimal(match[1]).mul(new ExactDecimal(unit[2] ? 1024 : base).pow(power)).toDecimalPlaces(0);
+  const bytes = new ExactDecimal(match[0]).mul(new ExactDecimal(unit[2] ? 1024 : base).pow(power)).toDecimalPlaces(0);
   if (!bytes.isFinite()) throw overflowError("Size");
   const exact = bytes.toBigInt();
   if (bigint) return exact;

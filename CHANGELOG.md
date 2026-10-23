@@ -2,6 +2,19 @@
 
 All notable changes to `@fatdevcon/precisekit`. The project follows [semantic versioning](https://semver.org/).
 
+## 0.5.2
+
+### Security
+
+- Replace date-format tokenization, timezone suffix matching and byte-size parsing with linear-time processing to address the three reported ReDoS locations, preserving public formatting contracts.
+- Replace single-pass FAQ tag stripping in documentation generation and verification with a shared linear extractor that handles nested and incomplete delimiters. Keep entity decoding separate from JSON-LD script encoding.
+- Add adversarial date, number and documentation-text regression tests, including large inputs.
+
+### Maintenance
+
+- Audit CI and npm OIDC publishing, preserve provenance and document external configuration and verification requirements in the v0.5.2 release report.
+- Synchronize package metadata and the documentation playground for 0.5.2. No public APIs, error codes, export paths or runtime dependencies are added.
+
 ## 0.5.1
 
 ### Added

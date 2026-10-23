@@ -10,7 +10,7 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 const fixture = await mkdtemp(join(tmpdir(), "precisekit-docs-sync-"));
 await mkdir(join(fixture, "scripts"));
 for (const entry of ["docs", "dist", "README.md", "package.json", "CHANGELOG.md"]) await cp(join(root, entry), join(fixture, entry), { recursive: true });
-for (const entry of ["sync-docs.mjs", "measure-bundle.mjs"]) await cp(join(root, "scripts", entry), join(fixture, "scripts", entry));
+for (const entry of ["sync-docs.mjs", "measure-bundle.mjs", "docs-text.mjs"]) await cp(join(root, "scripts", entry), join(fixture, "scripts", entry));
 await symlink(join(root, "node_modules"), join(fixture, "node_modules"), "dir");
 const manifest = JSON.parse(await readFile(join(fixture, "package.json"), "utf8"));
 manifest.version = "0.5.1-test.1";

@@ -24,7 +24,7 @@
 
 ## Contents
 
-[Install](#install) · [Quick start](#quick-start) · [Workflows](#workflows) · [New in 0.5.1](#new-in-051) ·
+[Install](#install) · [Quick start](#quick-start) · [Workflows](#workflows) · [New in 0.5.2](#new-in-052) ·
 [Examples](#money-without-hidden-rounding) · [Compatibility](#compatibility) · [Bundle size](#bundle-size-and-tree-shaking) ·
 [Security](#security) · [Migration](#migration) · [Contributing](#contributing-and-license)
 
@@ -76,7 +76,14 @@ Try it without installing: [open the playground](https://phanhoangquoctu.github.
 The [API reference](https://phanhoangquoctu.github.io/precisekit/#api) documents
 each signature, default, return kind, error and example.
 
-## New in 0.5.1
+## New in 0.5.2
+
+Security maintenance: linear-time date/number parsing and FAQ text extraction,
+with regression tests for adversarial inputs. Public APIs and runtime dependencies
+are unchanged. CI and OIDC release verification are documented in
+[the release report](https://github.com/PhanHoangQuocTu/precisekit/blob/master/plans/v0.5.2-security-ci-release-report.md).
+
+### Helpers added in 0.5.1
 
 ```ts
 import { compactNullish, hasByPath, getByPath, pickBy } from "@fatdevcon/precisekit";

@@ -1047,7 +1047,33 @@ function formatBytes(value, options = {}) {
   );
   return `${text} ${units[index]}`;
 }
-var BYTE_UNIT = /^\s*([+]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:e[+-]?[0-9]+)?)\s*([a-z]*)\s*$/i;
+var splitByteSize = (text) => {
+  const input = text.trim();
+  let at = input[0] === "+" ? 1 : 0;
+  const isDigit = (index) => input[index] >= "0" && input[index] <= "9";
+  const start = at;
+  while (isDigit(at)) at++;
+  let digits = at - start;
+  if (input[at] === ".") {
+    const fraction = ++at;
+    while (isDigit(at)) at++;
+    digits += at - fraction;
+  }
+  if (digits === 0) return void 0;
+  if (input[at] === "e" || input[at] === "E") {
+    let end = at + 1;
+    if (input[end] === "+" || input[end] === "-") end++;
+    const exponent = end;
+    while (isDigit(end)) end++;
+    if (end > exponent) at = end;
+  }
+  const numberEnd = at;
+  while (at < input.length && /\s/.test(input[at])) at++;
+  const unitStart = at;
+  while (at < input.length && /[a-z]/i.test(input[at])) at++;
+  if (at !== input.length) return void 0;
+  return [input.slice(0, numberEnd), input.slice(unitStart)];
+};
 function parseBytes(text, options = {}) {
   const { base = 1e3, bigint = false } = options;
   if (typeof text !== "string") {
@@ -1057,12 +1083,12 @@ function parseBytes(text, options = {}) {
   const invalid = () => {
     throw new NumericTypeError("ERR_INVALID_FORMAT", `Cannot read ${describeValue(text)} as a size such as "1.5 GB" or "512 KiB"`);
   };
-  const match = BYTE_UNIT.exec(text);
+  const match = splitByteSize(text);
   if (!match) return invalid();
-  const unit2 = /^(?:b|([kmgtpezyrq])(i?)b)?$/.exec(match[2].toLowerCase());
+  const unit2 = /^(?:b|([kmgtpezyrq])(i?)b)?$/.exec(match[1].toLowerCase());
   if (!unit2 || unit2[2] && "rq".includes(unit2[1])) return invalid();
   const power2 = unit2[1] ? "kmgtpezyrq".indexOf(unit2[1]) + 1 : 0;
-  const bytes = new ExactDecimal(match[1]).mul(new ExactDecimal(unit2[2] ? 1024 : base).pow(power2)).toDecimalPlaces(0);
+  const bytes = new ExactDecimal(match[0]).mul(new ExactDecimal(unit2[2] ? 1024 : base).pow(power2)).toDecimalPlaces(0);
   if (!bytes.isFinite()) throw overflowError("Size");
   const exact = bytes.toBigInt();
   if (bigint) return exact;
@@ -1996,7 +2022,7 @@ var DATE_RE = /^-?(?:(\d{3})|(\d{2})(?:-?(\d{2}))?|W(\d{2})(?:-?(\d{1}))?|)$/;
 var TIME_RE = /^(\d{2}(?:[.,]\d*)?)(?::?(\d{2}(?:[.,]\d*)?))?(?::?(\d{2}(?:[.,]\d*)?))?$/;
 var ZONE_RE = /^([+-])(\d{2})(?::?(\d{2}))?$/;
 var YEAR_RE = /^(?:(\d{4}|[+-]\d{6})|(\d{2}|[+-]\d{4})$)/;
-var ZONE_TAIL_RE = /([Z+-].*)$/;
+var ZONE_TAIL_RE = /^[^Z+-]*([Z+-].*)$/;
 var unit = (value) => value ? parseInt(value, 10) : 1;
 var timeUnit = (value) => value && parseFloat(value.replace(",", ".")) || 0;
 var parseDay = (text, year) => {
@@ -2211,19 +2237,46 @@ var zoneFull = (offset, delimiter) => {
   return sign2 + pad(Math.trunc(absolute / 60), 2) + delimiter + pad(absolute % 60, 2);
 };
 var zoneOptionalMinutes = (offset, delimiter) => offset % 60 === 0 ? (offset > 0 ? "-" : "+") + pad(Math.abs(offset) / 60, 2) : zoneFull(offset, delimiter);
-var TOKEN_RE = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g;
-var LONG_TOKEN_RE = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g;
+var tokenize = (pattern, long) => {
+  const pieces = [];
+  let at = 0;
+  while (at < pattern.length) {
+    const start = at++;
+    const letter = pattern[start];
+    if (letter === "'") {
+      if (pattern[at] === "'") at++;
+      else {
+        while (at < pattern.length) {
+          if (pattern[at++] !== "'") continue;
+          if (pattern[at] === "'") at++;
+          else break;
+        }
+      }
+    } else if (long && (letter === "P" || letter === "p")) {
+      while (pattern[at] === letter) at++;
+      if (letter === "P") while (pattern[at] === "p") at++;
+    } else if (!long && "yYQqMLwIdDecihHKkms".includes(letter) && pattern[at] === "o") {
+      at++;
+    } else if (!long && /\w/.test(letter)) {
+      while (pattern[at] === letter) at++;
+    } else if (/^[\r\n\u2028\u2029]$/.test(letter)) {
+      continue;
+    }
+    pieces.push(pattern.slice(start, at));
+  }
+  return pieces;
+};
 var TOKEN_LETTERS = "GyYuRQqMLwIdDEeciabBhHKkmsSXxOztT";
 var LETTER_RE = /[a-zA-Z]/;
-var unquote = (text) => /^'([^]*?)'?$/.exec(text)[1].replace(/''/g, "'");
+var unquote = (text) => text.slice(1, text.endsWith("'") ? -1 : void 0).replace(/''/g, "'");
 var expandLong = (token, names) => {
   const widths = ["short", "medium", "long", "full"];
   const pick2 = (count) => widths[Math.min(count, 4) - 1];
   const long = names.long ?? englishNames.long;
-  const match = /(P+)(p+)?/.exec(token);
   if (token[0] === "p") return long("time", pick2(token.length));
-  if (!match[2]) return long("date", pick2(token.length));
-  return long("dateTime", pick2(match[1].length)).replace("{{date}}", long("date", pick2(match[1].length))).replace("{{time}}", long("time", pick2(match[2].length)));
+  const timeStart = token.indexOf("p");
+  if (timeStart === -1) return long("date", pick2(token.length));
+  return long("dateTime", pick2(timeStart)).replace("{{date}}", long("date", pick2(timeStart))).replace("{{time}}", long("time", pick2(token.length - timeStart)));
 };
 var formatTokens = (fields, pattern, locale, options = {}) => {
   if (typeof pattern !== "string") throw new TypeError("format must be a string");
@@ -2234,7 +2287,7 @@ var formatTokens = (fields, pattern, locale, options = {}) => {
   if (!(firstWeekContainsDate >= 1 && firstWeekContainsDate <= 7)) {
     throw new RangeError("firstWeekContainsDate must be between 1 and 7 inclusively");
   }
-  const expanded = (pattern.match(LONG_TOKEN_RE) ?? []).map((piece) => piece[0] === "P" || piece[0] === "p" ? expandLong(piece, names) : piece).join("");
+  const expanded = tokenize(pattern, true).map((piece) => piece[0] === "P" || piece[0] === "p" ? expandLong(piece, names) : piece).join("");
   const { year: signedYear, month, date, hours, minutes, seconds, ms, weekday: weekday2, offset } = fields;
   const epoch = epochDay(signedYear, month, date);
   const eraYear = signedYear > 0 ? signedYear : 1 - signedYear;
@@ -2349,7 +2402,7 @@ var formatTokens = (fields, pattern, locale, options = {}) => {
         throw new RangeError(`Format string contains an unescaped latin alphabet character \`${letter}\``);
     }
   };
-  let parts = (expanded.match(TOKEN_RE) ?? []).map((piece) => {
+  let parts = tokenize(expanded, false).map((piece) => {
     if (piece === "''") return { isToken: false, value: "'" };
     if (piece[0] === "'") return { isToken: false, value: unquote(piece) };
     if (TOKEN_LETTERS.includes(piece[0])) return { isToken: true, value: piece };

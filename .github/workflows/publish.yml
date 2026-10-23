@@ -13,7 +13,10 @@
 #          Repository           : precisekit
 #          Workflow filename    : publish.yml
 #          Environment name     : npm
-#     3. Optionally set the package's publishing access to "Require two-factor authentication
+#     3. Enable direct `npm publish` for this publisher. New registrations may default
+#        to staged publishing only. Complete the first publish within 2 days; if the
+#        pending registration expires, delete it and register the exact identity again.
+#     4. Optionally set the package's publishing access to "Require two-factor authentication
 #        and disallow tokens" once trusted publishing works, then revoke the old NPM_TOKEN.
 #   GitHub (repository settings)
 #     1. Settings -> Environments -> New environment named `npm`.
@@ -62,6 +65,7 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+          package-manager-cache: false
 
       # Trusted publishing requires npm CLI >= 11.5.1. The runner image ships an older npm, so
       # install an exact, pinned release instead of a floating range.
@@ -93,10 +97,7 @@ jobs:
             echo "Tagged commit $GITHUB_SHA is not reachable from master." >&2
             exit 1
           fi
-          if npm view "$name@$version" version >/dev/null 2>&1; then
-            echo "$name@$version is already published." >&2
-            exit 1
-          fi
+          node scripts/verify-release-registry.mjs
           echo "Publishing $name@$version from $GITHUB_SHA"
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -104,6 +105,7 @@ jobs:
           bun-version: 1.3.5
 
       # Same gate as `prepublishOnly`, plus the Bun and tarball consumer checks.
+      - run: node --test scripts/verify-release-registry.test.mjs
       - run: npm ci
       - run: npm run check
       - run: npm run docs:sync
@@ -119,5 +121,7 @@ jobs:
       # No NODE_AUTH_TOKEN / NPM_TOKEN: npm authenticates through OIDC and attaches a signed
       # provenance attestation. --ignore-scripts because the gate above already ran the same
       # checks and build; this avoids running prepublishOnly a second time.
+      - name: Recheck registry immediately before publishing
+        run: node scripts/verify-release-registry.mjs
       - name: Publish with provenance
         run: npm publish --provenance --access public --ignore-scripts

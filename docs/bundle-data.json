@@ -1,22 +1,22 @@
 {
   "name": "@fatdevcon/precisekit",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "node": "v22.22.3",
   "esbuild": "0.28.2",
   "schemaVersion": 1,
   "entry": "dist/index.mjs",
-  "esmSha256": "8ecd0bdcdc54f9fd3f483f335d932adab8f079c07938277a08e2e3a7660fd761",
+  "esmSha256": "fe707acd07429f4754fbee6f38817866f633e84dba98ab11dd60a86309c67541",
   "exportCount": 224,
   "artifacts": {
     "index.mjs": {
-      "raw": 164773,
-      "gzip": 41211,
-      "brotli": 34353
+      "raw": 166358,
+      "gzip": 41557,
+      "brotli": 34625
     },
     "index.js": {
-      "raw": 169514,
-      "gzip": 41884,
-      "brotli": 34945
+      "raw": 171099,
+      "gzip": 42231,
+      "brotli": 35249
     },
     "index.d.ts": {
       "raw": 71137,
@@ -31,9 +31,9 @@
   },
   "consumers": {
     "full": {
-      "raw": 87111,
-      "gzip": 29953,
-      "brotli": 26378
+      "raw": 87748,
+      "gzip": 30180,
+      "brotli": 26488
     },
     "toNumber": {
       "raw": 1746,

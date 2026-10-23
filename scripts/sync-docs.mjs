@@ -1,3 +1,4 @@
+import { plainText, scriptJson } from "./docs-text.mjs";
 // Synchronizes package-owned documentation metadata and copies the built ESM bundle used by the playground.
 // Run after `npm run build`; `npm run test:site` fails when any generated value is stale.
 import assert from "node:assert/strict";
@@ -20,7 +21,6 @@ const bundleName = `${name.split("/").at(-1)}.mjs`;
 const target = new URL(`../docs/assets/${bundleName}`, import.meta.url);
 const [scope, packageBase] = name.split("/");
 const escapeHtml = (value) => value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const scriptJson = value => JSON.stringify(value).replace(/</g, "\\u003c");
 const changelog = await read("../CHANGELOG.md");
 const release = changelog.split(/^## /m).find((entry) => entry.split("\n")[0].trim() === version);
 assert.ok(release, `CHANGELOG.md must describe ${version}`);
@@ -175,8 +175,7 @@ site = replaceOne(site, /<script type="application\/ld\+json">({"@context":"http
   return `<script type="application/ld+json">${scriptJson(software)}</script>`;
 }, "SoftwareSourceCode structured data");
 // FAQ structured data must describe the visible answers, not a second editorial copy.
-const plainText = html => html.replace(/<[^>]+>/g, "").replace(/&(amp|lt|gt|quot|apos|#39|nbsp);/g,
-  (_match, entity) => ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'", nbsp: "\u00a0" })[entity]).replace(/\s+/g, " ").trim();
+
 const faqSection = site.match(/<section class="block" id="faq">[\s\S]*?<\/section>/)?.[0] ?? "";
 const faq = [...faqSection.matchAll(/<details>\s*<summary>([\s\S]*?)<\/summary>\s*<p>([\s\S]*?)<\/p>\s*<\/details>/g)].map(([, question, answer]) => ({
   "@type": "Question", name: plainText(question), acceptedAnswer: { "@type": "Answer", text: plainText(answer) },

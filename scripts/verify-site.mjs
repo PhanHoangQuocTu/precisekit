@@ -1,3 +1,4 @@
+import { plainText } from "./docs-text.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile, stat } from "node:fs/promises";
@@ -174,8 +175,7 @@ assert.equal(software.softwareVersion, version);
 assert.equal(software.codeRepository, github);
 assert.equal(software.url, url);
 assert.equal(software.downloadUrl, npm);
-const plainText = html => html.replace(/<[^>]+>/g, "").replace(/&(amp|lt|gt|quot|apos|#39|nbsp);/g,
-  (_match, entity) => ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", "#39": "'", nbsp: "\u00a0" })[entity]).replace(/\s+/g, " ").trim();
+
 const faqSection = site.match(/<section class="block" id="faq">[\s\S]*?<\/section>/)?.[0] ?? "";
 const visibleFaq = [...faqSection.matchAll(/<details>\s*<summary>([\s\S]*?)<\/summary>\s*<p>([\s\S]*?)<\/p>\s*<\/details>/g)].map(([, question, answer]) => ({
   "@type": "Question", name: plainText(question), acceptedAnswer: { "@type": "Answer", text: plainText(answer) },

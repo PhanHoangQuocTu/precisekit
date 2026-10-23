@@ -32,6 +32,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - run: node --test scripts/verify-release-registry.test.mjs
       - run: npm ci
       - run: npm run check
       - run: npm run docs:sync
